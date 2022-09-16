@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f48cb4b03e6214d9a02cedfda6f26635dad001fb"
+    },
+    "com.polyternity.stuff": {
+      "version": "https://github.com/DannyKrendel/Polyternity-Stuff.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "74df191c2f929d17d6ef5cd9172fb5737df98b31"
+    },
     "com.unity.2d.animation": {
       "version": "7.0.6",
       "depth": 1,
