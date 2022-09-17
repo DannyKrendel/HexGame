@@ -24,7 +24,7 @@ namespace HexGame.UI
             foreach (var cell in _hexGrid.Cells)
             {
                 var label = Instantiate(_hexCellLabelPrefab, _canvas.transform);
-                label.rectTransform.anchoredPosition = new Vector2(cell.transform.position.x, cell.transform.position.z);
+                label.rectTransform.position = Camera.main.WorldToScreenPoint(cell.transform.position);
                 label.text = cell.Coordinates.ToStringOnSeparateLines();
             }
         }
