@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -176,7 +177,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 0.75
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -207,6 +208,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b02d60310db49f6a8c29f75719d9762, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &590827662
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +231,6 @@ GameObject:
   - component: {fileID: 590827666}
   - component: {fileID: 590827665}
   - component: {fileID: 590827664}
-  - component: {fileID: 590827663}
   - component: {fileID: 590827667}
   m_Layer: 5
   m_Name: HexGridCanvas
@@ -227,23 +239,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &590827663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 590827662}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &590827664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,6 +318,7 @@ MonoBehaviour:
   _canvas: {fileID: 590827665}
   _hexCellLabelPrefab: {fileID: 8397738392714381028, guid: 9894b01c90245974288f1adefb88b5b4, type: 3}
   _hexGrid: {fileID: 602388311}
+  _cameraController: {fileID: 519420033}
 --- !u!1 &602388309
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,8 +363,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169fad272a844aa9a5f883f30db010c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _width: 6
-  _height: 6
+  _width: 10
+  _height: 10
+  _margin: -0.04
   _cellPrefab: {fileID: 2192754584800261322, guid: 894e740d391420f42b4a21efb90227f3, type: 3}
 --- !u!1 &1589934649
 GameObject:
