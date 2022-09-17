@@ -12,9 +12,8 @@ namespace HexGame.Editor
                 property.FindPropertyRelative("_x").intValue,
                 property.FindPropertyRelative("_z").intValue
             );
-            
-            position = EditorGUI.PrefixLabel(position, label);
-            GUI.Label(position, coordinates.ToString());
+
+            EditorGUI.LabelField(position, label.text, coordinates.ToString());
         }
     }
 }
