@@ -62,6 +62,7 @@ namespace HexGame.Editor
             _width = EditorPrefs.GetInt(EditorPrefs_HexGridWidth, 5);
             _height = EditorPrefs.GetInt(EditorPrefs_HexGridHeight, 5);
             _cellOuterRadius = EditorPrefs.GetFloat(EditorPrefs_CellOuterRadius, 1);
+            _cellInnerRadius = _cellOuterRadius * 0.866025404f;
             var cellPrefabPath = AssetDatabase.GUIDToAssetPath(EditorPrefs.GetString(EditorPrefs_CellPrefabGUID));
             _cellPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(cellPrefabPath);
         }
