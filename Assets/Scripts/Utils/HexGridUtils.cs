@@ -12,5 +12,18 @@ namespace HexGame.Utils
             position.z = z * (outerRadius * 1.5f) + margin * Mathf.Cos(30 * Mathf.Deg2Rad) * z;
             return position;
         }
+
+        public static Vector3[] GetCellPoints(Vector3 position, float innerRadius, float outerRadius)
+        {
+            return new[] 
+            {
+                position + new Vector3(0f, 0f, outerRadius),
+                position + new Vector3(innerRadius, 0f, 0.5f * outerRadius),
+                position + new Vector3(innerRadius, 0f, -0.5f * outerRadius),
+                position + new Vector3(0f, 0f, -outerRadius),
+                position + new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
+                position + new Vector3(-innerRadius, 0f, 0.5f * outerRadius)
+            };
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HexGame.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -8,23 +9,25 @@ namespace HexGame.Editor
 {
     public class HexGridEditor : EditorWindow
     {
-        private const string EditorPrefs_HexGridWidth = "HexGridWidth";
-        private const string EditorPrefs_HexGridHeight = "HexGridHeight";
-        private const string EditorPrefs_CellOuterRadius = "CellOuterRadius";
-        private const string EditorPrefs_CellPrefabGUID = "CellPrefabId";
+        private EditorOptionInt _width;
+        private EditorOptionInt _height;
+        private EditorOptionFloat _cellOuterRadius;
+        private EditorOptionGameObject _cellPrefab;
+        private EditorOptionColor _cellColorNormal;
+        private EditorOptionColor _cellColorSelected;
         
-        private int _width;
-        private int _height;
-        private float _cellOuterRadius;
         private float _cellInnerRadius;
-        private GameObject _cellPrefab;
+
+        private CellData[] _cellDataArray;
 
         [MenuItem("Window/Hex Grid Editor")]
         private static void Init() => GetWindow<HexGridEditor>("Hex Grid Editor");
 
         private void OnEnable()
         {
+            InitializeSettings();
             LoadSettings();
+            RefreshCellDataArray();
             SceneView.duringSceneGui += OnSceneGui;
         }
         
@@ -37,48 +40,79 @@ namespace HexGame.Editor
 
         private void OnGUI()
         {
-            NumberField("Grid Width", ref _width, 0, 50);
-            NumberField("Grid Height", ref _height, 0, 50);
-            if (NumberField("Cell Outer Radius", ref _cellOuterRadius))
-                _cellInnerRadius = _cellOuterRadius * 0.866025404f;
+            _width.Value = NumberField("Grid Width", _width.Value, 0, 50);
+            _height.Value = NumberField("Grid Height", _height.Value, 0, 50);
+            var lastCellOuterRadius = _cellOuterRadius.Value;
+            _cellOuterRadius.Value = NumberField("Cell Outer Radius", lastCellOuterRadius);
+            if (_cellOuterRadius.Value != lastCellOuterRadius)
+                _cellInnerRadius = _cellOuterRadius.Value * 0.866025404f;
 
-            _cellPrefab = (GameObject)EditorGUILayout.ObjectField("Cell Prefab", _cellPrefab, typeof(GameObject), false);
+            _cellPrefab.Value = (GameObject)EditorGUILayout.ObjectField("Cell Prefab", _cellPrefab.Value, typeof(GameObject), false);
+            _cellColorNormal.Value = EditorGUILayout.ColorField("Cell Normal Color", _cellColorNormal.Value);
 
-            if (GUI.changed) SceneView.RepaintAll();
+            if (GUI.changed)
+            {
+                RefreshCellDataArray();
+                SceneView.RepaintAll();
+            }
         }
 
         private void OnSceneGui(SceneView sceneView)
         {
-            for (int z = 0, i = 0; z < _height; z++)
-            for (int x = 0; x < _width; x++)
+            if (_cellPrefab.Value == null) return;
+            
+            for (int i = 0; i < _cellDataArray.Length; i++)
             {
-                var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius, 0);
-                Handles.Disc(Quaternion.identity, position, Vector3.up, _cellOuterRadius, false, 0);
+                Handles.color = _cellColorNormal.Value;
+                Handles.DrawAAConvexPolygon(_cellDataArray[i].Corners);
             }
+        }
+
+        private void RefreshCellDataArray()
+        {
+            _cellDataArray = new CellData[_width.Value * _height.Value];
+            
+            for (int z = 0, i = 0; z < _height.Value; z++)
+            for (int x = 0; x < _width.Value; x++)
+            {
+                var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius.Value, 1);
+                var corners = HexGridUtils.GetCellPoints(position, _cellInnerRadius, _cellOuterRadius.Value);
+                _cellDataArray[i++] = new CellData { Position = position, Corners = corners };
+            }
+        }
+
+        private void InitializeSettings()
+        {
+            _width = new EditorOptionInt("HexGridWidth");
+            _height = new EditorOptionInt("HexGridHeight");
+            _cellOuterRadius = new EditorOptionFloat("CellOuterRadius");
+            _cellPrefab = new EditorOptionGameObject("CellPrefab");
+            _cellColorNormal = new EditorOptionColor("CellColorNormal");
+            _cellColorSelected = new EditorOptionColor("CellColorSelected");
         }
 
         private void LoadSettings()
         {
-            _width = EditorPrefs.GetInt(EditorPrefs_HexGridWidth, 5);
-            _height = EditorPrefs.GetInt(EditorPrefs_HexGridHeight, 5);
-            _cellOuterRadius = EditorPrefs.GetFloat(EditorPrefs_CellOuterRadius, 1);
-            _cellInnerRadius = _cellOuterRadius * 0.866025404f;
-            var cellPrefabPath = AssetDatabase.GUIDToAssetPath(EditorPrefs.GetString(EditorPrefs_CellPrefabGUID));
-            _cellPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(cellPrefabPath);
+            _width.Load(5);
+            _height.Load(5);
+            _cellOuterRadius.Load(1);
+            _cellInnerRadius = _cellOuterRadius.Value * 0.866025404f;
+            _cellPrefab.Load(null);
+            _cellColorNormal.Load(new Color(1, 1, 1, 0.2f));
+            _cellColorSelected.Load(new Color(1, 1, 1, 0.5f));
         }
 
         private void SaveSettings()
         {
-            EditorPrefs.SetInt(EditorPrefs_HexGridWidth, _width);
-            EditorPrefs.SetInt(EditorPrefs_HexGridHeight, _height);
-            EditorPrefs.SetFloat(EditorPrefs_CellOuterRadius, _cellOuterRadius);
-            if (_cellPrefab == null)
-                EditorPrefs.SetString(EditorPrefs_CellPrefabGUID, "");
-            else if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(_cellPrefab, out var guid, out long _))
-                EditorPrefs.SetString(EditorPrefs_CellPrefabGUID, guid);
+            _width.Save();
+            _height.Save();
+            _cellOuterRadius.Save();
+            _cellPrefab.Save();
+            _cellColorNormal.Save();
+            _cellColorSelected.Save();
         }
 
-        private static bool NumberField<T>(string labelName, ref T value, T? min = null, T? max = null) where T : struct
+        private static T NumberField<T>(string labelName, T value, T? min = null, T? max = null) where T : struct
         {
             T newValue;
             using (new EditorGUILayout.HorizontalScope())
@@ -103,11 +137,99 @@ namespace HexGame.Editor
                 }
             }
 
-            var result = !value.Equals(newValue);
+            var changed = !value.Equals(newValue);
 
             value = newValue;
 
-            return result;
+            return value;
+        }
+
+        private struct CellData
+        {
+            public Vector3 Position;
+            public Vector3[] Corners;
+        }
+    }
+
+    public abstract class EditorOption<T>
+    {
+        protected string EditorPrefsKey;
+        
+        protected EditorOption(string editorPrefsKey)
+        {
+            EditorPrefsKey = editorPrefsKey;
+        }
+        public abstract T Value { get; set; }
+        public abstract void Load(T defaultValue);
+        public abstract void Save();
+    }
+
+    public class EditorOptionInt : EditorOption<int>
+    {
+        public EditorOptionInt(string editorPrefsKey) : base(editorPrefsKey) { }
+        public override int Value { get; set; }
+        public override void Load(int defaultValue) => Value = EditorPrefs.GetInt(EditorPrefsKey, defaultValue);
+        public override void Save() => EditorPrefs.SetInt(EditorPrefsKey, Value);
+    }
+    
+    public class EditorOptionFloat : EditorOption<float>
+    {
+        public EditorOptionFloat(string editorPrefsKey) : base(editorPrefsKey) { }
+        public override float Value { get; set; }
+        public override void Load(float defaultValue) => Value = EditorPrefs.GetFloat(EditorPrefsKey, defaultValue);
+        public override void Save() => EditorPrefs.SetFloat(EditorPrefsKey, Value);
+    }
+    
+    public class EditorOptionColor : EditorOption<Color>
+    {
+        public EditorOptionColor(string editorPrefsKey) : base(editorPrefsKey) { }
+        public override Color Value { get; set; }
+        public override void Load(Color defaultValue)
+        {
+            Value = Deserialize(EditorPrefs.GetString(EditorPrefsKey, Serialize(defaultValue)));
+        }
+
+        public override void Save()
+        {
+            EditorPrefs.SetString(EditorPrefsKey, Serialize(Value));
+        }
+
+        private string Serialize(Color color)
+        {
+            return $"{color.r}, {color.g}, {color.b}, {color.a}";
+        }
+
+        private Color Deserialize(string str)
+        {
+            var arr = str.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
+            return new Color(arr[0], arr[1], arr[2], arr[3]);
+        }
+    }
+    
+    public class EditorOptionGameObject : EditorOption<GameObject>
+    {
+        public EditorOptionGameObject(string editorPrefsKey) : base(editorPrefsKey) { }
+        public override GameObject Value { get; set; }
+        public override void Load(GameObject defaultValue)
+        {
+            Value = Deserialize(EditorPrefs.GetString(EditorPrefsKey, Serialize(defaultValue)));
+        }
+
+        public override void Save()
+        {
+            EditorPrefs.SetString(EditorPrefsKey, Serialize(Value));
+        }
+        
+        private string Serialize(GameObject gameObject)
+        {
+            if (gameObject == null) return "";
+            return AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Value, out var guid, out long _) ? guid : "";
+        }
+
+        private GameObject Deserialize(string str)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(str);
+            return AssetDatabase.LoadAssetAtPath<GameObject>(path);
         }
     }
 }
