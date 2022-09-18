@@ -1,3 +1,16 @@
 {
-	"name": "HexGame"
+    "name": "HexGame",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b531026d2c40ed0479f913c6e645e46e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

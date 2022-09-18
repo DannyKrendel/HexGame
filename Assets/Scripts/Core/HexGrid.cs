@@ -1,4 +1,5 @@
 ﻿using System;
+using HexGame.Utils;
 using UnityEngine;
 
 namespace HexGame
@@ -16,13 +17,11 @@ namespace HexGame
 
         private float _cellOuterRadius;
         private float _cellInnerRadius;
-        private float _marginForHeight;
 
         private void Awake()
         {
             _cellOuterRadius = _cellPrefab.SpriteRenderer.bounds.extents.z;
             _cellInnerRadius = _cellOuterRadius * 0.866025404f;
-            _marginForHeight = _margin * Mathf.Cos(30 * Mathf.Deg2Rad);
             CalculateBounds();
             CreateCells();
         }
@@ -30,7 +29,7 @@ namespace HexGame
         private void CalculateBounds()
         {
             var width = _width * (_cellInnerRadius * 2f) + _margin * (_width - 1) + (_height > 1 ? _margin * 0.5f + _cellInnerRadius : 0);
-            var height = _height * (_cellOuterRadius * 1.5f) + (_cellOuterRadius * 0.5f) + _marginForHeight * (_height - 1);
+            var height = _height * (_cellOuterRadius * 1.5f) + (_cellOuterRadius * 0.5f) + _margin * Mathf.Cos(30 * Mathf.Deg2Rad) * (_height - 1);
             var center = transform.position;
             center.x += width * 0.5f - _cellInnerRadius;
             center.z += height * 0.5f - _cellOuterRadius;
@@ -50,10 +49,7 @@ namespace HexGame
 
         private void CreateCell(int x, int z, int i)
         {
-            var position = Vector3.zero;
-            var xMult = x + z * 0.5f - z / 2;
-            position.x = xMult * (_cellInnerRadius * 2f) + _margin * xMult;
-            position.z = z * (_cellOuterRadius * 1.5f) + _marginForHeight * z;
+            var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius, _margin);
 
             Cells[i] = Instantiate(_cellPrefab, transform);
             Cells[i].transform.localPosition = position;
