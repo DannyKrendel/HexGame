@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HexGame.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,34 +14,31 @@ namespace HexGame
     {
         [SerializeField, Range(1, 50)] private int _width = 5;
         [SerializeField, Range(1, 50)] private int _height = 5;
+        [SerializeField, Range(0.1f, 10f)] private float _cellOuterRadius = 1;
         [SerializeField, Range(-1, 1)] private float _margin = 0.1f;
-        [SerializeField] private HexCell _cellPrefab;
+        [SerializeField] private GameObject _cellPrefab;
+        [SerializeField, HideInInspector] private HexCell[] _cells;
+        [SerializeField, HideInInspector] private float _cellInnerRadius;
         
         #if UNITY_EDITOR
+        [SerializeField, HideInInspector] private Vector3 _cellBoundsSize;
         [SerializeField, HideInInspector] private EditorCellData[] _editorCellDataArray;
         #endif
-        
-        public List<HexCell> Cells { get; } = new();
+
+        public HexCell[] Cells => _cells;
         public Bounds Bounds { get; private set; }
 
-        private float _cellOuterRadius;
-        private float _cellInnerRadius;
+        #if UNITY_EDITOR
+        private EditorCellData? _selectedCell;
+        #endif
 
         private void Awake()
         {
-            if (!Application.IsPlaying(gameObject)) return;
-            
-            _cellOuterRadius = _cellPrefab.SpriteRenderer.bounds.extents.z;
-            _cellInnerRadius = _cellOuterRadius * 0.866025404f;
-            CalculateBounds();
+            if (Application.IsPlaying(gameObject))
+            {
+                CalculateBounds();
+            }
         }
-
-        #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            CreateEditorCells();
-        }
-        #endif
 
         private void OnEnable()
         {
@@ -48,18 +46,26 @@ namespace HexGame
             if (!Application.IsPlaying(gameObject))
             {
                 SceneView.duringSceneGui += OnSceneGui;
+                EditorApplication.hierarchyChanged += OnHierarchyChanged;
+                _cellBoundsSize = _cellPrefab.GetComponent<HexCell>().SpriteRenderer.bounds.size;
             }
             #endif
         }
-        
+
         private void OnDisable()
         {
             #if UNITY_EDITOR
             if (!Application.IsPlaying(gameObject))
             {
                 SceneView.duringSceneGui -= OnSceneGui;
+                EditorApplication.hierarchyChanged -= OnHierarchyChanged;
             }
             #endif
+        }
+
+        private void CalculateInnerRadius()
+        {
+            _cellInnerRadius = _cellOuterRadius * 0.866025404f;
         }
 
         private void CalculateBounds()
@@ -74,18 +80,76 @@ namespace HexGame
         }
 
         #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            CalculateInnerRadius();
+            UpdateEditorCells();
+            UpdateCells();
+            UpdateCellsSpriteSize();
+        }
+        
+        private void OnHierarchyChanged()
+        {
+            UpdateCells();
+        }
+        
         private void OnSceneGui(SceneView sceneView)
         {
             if (_cellPrefab == null) return;
-            
+
+            var mousePos = Event.current.mousePosition;
+            var ray = HandleUtility.GUIPointToWorldRay(mousePos);
+            var plane = new Plane(Vector3.up, Vector3.zero);
+            var hitPoint = Vector3.zero;
+            if (plane.Raycast(ray, out var distance))
+                hitPoint = ray.GetPoint(distance);
+
+            _selectedCell = null;
+
             for (int i = 0; i < _editorCellDataArray.Length; i++)
             {
-                Handles.color = new Color(1, 1, 1, 0.2f);
+                if (!_selectedCell.HasValue && GeometryUtils.IsPointInsidePolygon(hitPoint, _editorCellDataArray[i].Corners))
+                {
+                    Handles.color = new Color(1, 1, 1, 0.4f);
+                    _selectedCell = _editorCellDataArray[i];
+                }
+                else
+                {
+                    Handles.color = new Color(1, 1, 1, 0.2f);
+                }
+                
                 Handles.DrawAAConvexPolygon(_editorCellDataArray[i].Corners);
             }
+
+            if (_selectedCell.HasValue && Event.current.type == EventType.MouseDown && Event.current.button == 0)
+            {
+                if (Event.current.control)
+                    DeleteCell(_selectedCell.Value);
+                else
+                    CreateCell(_selectedCell.Value);
+
+                Event.current.Use();
+
+                Selection.activeGameObject = null;
+            }
+            
+            SceneView.RepaintAll();
         }
-        
-        private void CreateEditorCells()
+
+        private void UpdateCellsSpriteSize()
+        {
+            foreach (var cell in _cells)
+            {
+                UpdateCellSpriteSize(cell);
+            }
+        }
+
+        private void UpdateCellSpriteSize(HexCell cell)
+        {
+            cell.SetLocalScale((_cellOuterRadius * 2) / _cellBoundsSize.z);
+        }
+
+        private void UpdateEditorCells()
         {
             _editorCellDataArray = new EditorCellData[_width * _height];
             for (int z = 0, i = 0; z < _height; z++)
@@ -97,15 +161,51 @@ namespace HexGame
                     new EditorCellData { Coordinates = HexCoordinates.FromOffsetCoordinates(x, z), Position = position, Corners = corners };
             }
         }
-        
-        private void CreateCell(int x, int z, int i)
+
+        private void UpdateCells()
         {
-            var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius, _margin);
+            _cells = GetComponentsInChildren<HexCell>();
             
-            var cell = Instantiate(_cellPrefab, transform);
-            cell.transform.localPosition = position;
-            cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-            Cells.Add(cell);
+            foreach (var cell in _cells)
+            {
+                foreach (var editorCell in _editorCellDataArray)
+                {
+                    if (editorCell.Coordinates == cell.Coordinates)
+                        cell.transform.position = editorCell.Position;
+                }
+            }
+        }
+
+        private void CreateCell(EditorCellData editorCellData)
+        {
+            if (_cells.Any(c => c.Coordinates == editorCellData.Coordinates)) return; 
+            
+            var cell = ((GameObject)PrefabUtility.InstantiatePrefab(_cellPrefab, transform)).GetComponent<HexCell>();
+            cell.transform.localPosition = editorCellData.Position;
+            cell.Coordinates = editorCellData.Coordinates;
+            UpdateCellSpriteSize(cell);
+            
+            Undo.RegisterCreatedObjectUndo(cell.gameObject, "Create Cell");
+        }
+
+        private void DeleteCell(EditorCellData editorCellData)
+        {
+            var foundCell = _cells.FirstOrDefault(c => c.Coordinates == editorCellData.Coordinates);
+            if (foundCell == null) return;
+            
+            Undo.DestroyObjectImmediate(foundCell.gameObject);
+        }
+
+        public void FillGrid()
+        {
+            foreach (var editorCell in _editorCellDataArray)
+                CreateCell(editorCell);
+        }
+
+        public void ClearGrid()
+        {
+            foreach (var editorCell in _editorCellDataArray)
+                DeleteCell(editorCell);
         }
 
         [Serializable]

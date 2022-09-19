@@ -9,5 +9,10 @@ namespace HexGame
 
         public HexCoordinates Coordinates { get => _coordinates; set => _coordinates = value; }
         public SpriteRenderer SpriteRenderer => _spriteRenderer;
+
+        public void SetLocalScale(float localScale)
+        {
+            transform.localScale = Vector3.one * localScale;
+        }
     }
 }

@@ -23,5 +23,30 @@ namespace HexGame
         public string ToStringOnSeparateLines() => $"{X}\n{Y}\n{Z}";
         
         public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
+        
+        public bool Equals(HexCoordinates other)
+        {
+            return _x == other._x && _z == other._z;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is HexCoordinates other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_x, _z);
+        }
+
+        public static bool operator ==(HexCoordinates left, HexCoordinates right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(HexCoordinates left, HexCoordinates right)
+        {
+            return !left.Equals(right);
+        }
     }
 }
