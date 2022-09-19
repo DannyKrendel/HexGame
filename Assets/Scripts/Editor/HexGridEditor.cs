@@ -12,6 +12,7 @@ namespace HexGame.Editor
         private EditorOptionInt _width;
         private EditorOptionInt _height;
         private EditorOptionFloat _cellOuterRadius;
+        private EditorOptionFloat _cellMargin;
         private EditorOptionGameObject _cellPrefab;
         private EditorOptionColor _cellColorNormal;
         private EditorOptionColor _cellColorSelected;
@@ -27,6 +28,7 @@ namespace HexGame.Editor
         {
             InitializeSettings();
             LoadSettings();
+            _cellInnerRadius = _cellOuterRadius.Value * 0.866025404f;
             RefreshCellDataArray();
             SceneView.duringSceneGui += OnSceneGui;
         }
@@ -42,13 +44,16 @@ namespace HexGame.Editor
         {
             _width.Value = NumberField("Grid Width", _width.Value, 0, 50);
             _height.Value = NumberField("Grid Height", _height.Value, 0, 50);
+            
             var lastCellOuterRadius = _cellOuterRadius.Value;
             _cellOuterRadius.Value = NumberField("Cell Outer Radius", lastCellOuterRadius);
             if (_cellOuterRadius.Value != lastCellOuterRadius)
                 _cellInnerRadius = _cellOuterRadius.Value * 0.866025404f;
 
+            _cellMargin.Value = NumberField("Cell Margin", _cellMargin.Value, -1, 1);
             _cellPrefab.Value = (GameObject)EditorGUILayout.ObjectField("Cell Prefab", _cellPrefab.Value, typeof(GameObject), false);
             _cellColorNormal.Value = EditorGUILayout.ColorField("Cell Normal Color", _cellColorNormal.Value);
+            _cellColorSelected.Value = EditorGUILayout.ColorField("Cell Selected Color", _cellColorSelected.Value);
 
             if (GUI.changed)
             {
@@ -75,7 +80,7 @@ namespace HexGame.Editor
             for (int z = 0, i = 0; z < _height.Value; z++)
             for (int x = 0; x < _width.Value; x++)
             {
-                var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius.Value, 1);
+                var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius.Value, _cellMargin.Value);
                 var corners = HexGridUtils.GetCellPoints(position, _cellInnerRadius, _cellOuterRadius.Value);
                 _cellDataArray[i++] = new CellData { Position = position, Corners = corners };
             }
@@ -86,6 +91,7 @@ namespace HexGame.Editor
             _width = new EditorOptionInt("HexGridWidth");
             _height = new EditorOptionInt("HexGridHeight");
             _cellOuterRadius = new EditorOptionFloat("CellOuterRadius");
+            _cellMargin = new EditorOptionFloat("CellMargin");
             _cellPrefab = new EditorOptionGameObject("CellPrefab");
             _cellColorNormal = new EditorOptionColor("CellColorNormal");
             _cellColorSelected = new EditorOptionColor("CellColorSelected");
@@ -96,7 +102,7 @@ namespace HexGame.Editor
             _width.Load(5);
             _height.Load(5);
             _cellOuterRadius.Load(1);
-            _cellInnerRadius = _cellOuterRadius.Value * 0.866025404f;
+            _cellMargin.Load(0.1f);
             _cellPrefab.Load(null);
             _cellColorNormal.Load(new Color(1, 1, 1, 0.2f));
             _cellColorSelected.Load(new Color(1, 1, 1, 0.5f));
@@ -107,6 +113,7 @@ namespace HexGame.Editor
             _width.Save();
             _height.Save();
             _cellOuterRadius.Save();
+            _cellMargin.Save();
             _cellPrefab.Save();
             _cellColorNormal.Save();
             _cellColorSelected.Save();
@@ -196,12 +203,12 @@ namespace HexGame.Editor
 
         private string Serialize(Color color)
         {
-            return $"{color.r}, {color.g}, {color.b}, {color.a}";
+            return $"{color.r}; {color.g}; {color.b}; {color.a}";
         }
 
         private Color Deserialize(string str)
         {
-            var arr = str.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
+            var arr = str.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(float.Parse).ToArray();
             return new Color(arr[0], arr[1], arr[2], arr[3]);
         }
     }
