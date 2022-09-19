@@ -10,20 +10,14 @@ namespace HexGame.UI
         [SerializeField] private HexGrid _hexGrid;
         [SerializeField] private CameraController _cameraController;
 
-        private void OnEnable()
-        {
-            _hexGrid.CellsCreated += OnCellsCreated;
-        }
-        
-        private void OnDisable()
-        {
-            _hexGrid.CellsCreated -= OnCellsCreated;
-        }
-
-        private void OnCellsCreated()
+        private void Start()
         {
             _cameraController.FitCameraToBounds(_hexGrid.Bounds);
-            
+            CreateLabels();
+        }
+
+        private void CreateLabels()
+        {
             foreach (var cell in _hexGrid.Cells)
             {
                 var label = Instantiate(_hexCellLabelPrefab, _canvas.transform);

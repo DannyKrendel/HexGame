@@ -1,18 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using HexGame.Utils;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace HexGame
 {
+    [ExecuteAlways]
     public class HexGrid : MonoBehaviour
     {
-        [SerializeField] private int _width;
-        [SerializeField] private int _height;
-        [SerializeField] private float _margin;
+        [SerializeField, Range(1, 50)] private int _width = 5;
+        [SerializeField, Range(1, 50)] private int _height = 5;
+        [SerializeField, Range(-1, 1)] private float _margin = 0.1f;
         [SerializeField] private HexCell _cellPrefab;
-
-        public event Action CellsCreated;
-        public HexCell[] Cells { get; private set; }
+        
+        #if UNITY_EDITOR
+        [SerializeField, HideInInspector] private EditorCellData[] _editorCellDataArray;
+        #endif
+        
+        public List<HexCell> Cells { get; } = new();
         public Bounds Bounds { get; private set; }
 
         private float _cellOuterRadius;
@@ -20,10 +28,38 @@ namespace HexGame
 
         private void Awake()
         {
+            if (!Application.IsPlaying(gameObject)) return;
+            
             _cellOuterRadius = _cellPrefab.SpriteRenderer.bounds.extents.z;
             _cellInnerRadius = _cellOuterRadius * 0.866025404f;
             CalculateBounds();
-            CreateCells();
+        }
+
+        #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            CreateEditorCells();
+        }
+        #endif
+
+        private void OnEnable()
+        {
+            #if UNITY_EDITOR
+            if (!Application.IsPlaying(gameObject))
+            {
+                SceneView.duringSceneGui += OnSceneGui;
+            }
+            #endif
+        }
+        
+        private void OnDisable()
+        {
+            #if UNITY_EDITOR
+            if (!Application.IsPlaying(gameObject))
+            {
+                SceneView.duringSceneGui -= OnSceneGui;
+            }
+            #endif
         }
 
         private void CalculateBounds()
@@ -37,23 +73,48 @@ namespace HexGame
             Bounds = new Bounds(center, size);
         }
 
-        private void CreateCells()
+        #if UNITY_EDITOR
+        private void OnSceneGui(SceneView sceneView)
         {
-            Cells = new HexCell[_width * _height];
+            if (_cellPrefab == null) return;
+            
+            for (int i = 0; i < _editorCellDataArray.Length; i++)
+            {
+                Handles.color = new Color(1, 1, 1, 0.2f);
+                Handles.DrawAAConvexPolygon(_editorCellDataArray[i].Corners);
+            }
+        }
+        
+        private void CreateEditorCells()
+        {
+            _editorCellDataArray = new EditorCellData[_width * _height];
             for (int z = 0, i = 0; z < _height; z++)
             for (int x = 0; x < _width; x++)
-                CreateCell(x, z, i++);
-
-            CellsCreated?.Invoke();
+            {
+                var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius, _margin);
+                var corners = HexGridUtils.GetCellCorners(position, _cellInnerRadius, _cellOuterRadius);
+                _editorCellDataArray[i++] = 
+                    new EditorCellData { Coordinates = HexCoordinates.FromOffsetCoordinates(x, z), Position = position, Corners = corners };
+            }
         }
-
+        
         private void CreateCell(int x, int z, int i)
         {
             var position = HexGridUtils.GetCellPosition(x, z, _cellInnerRadius, _cellOuterRadius, _margin);
-
-            Cells[i] = Instantiate(_cellPrefab, transform);
-            Cells[i].transform.localPosition = position;
-            Cells[i].Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+            
+            var cell = Instantiate(_cellPrefab, transform);
+            cell.transform.localPosition = position;
+            cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+            Cells.Add(cell);
         }
+
+        [Serializable]
+        private struct EditorCellData
+        {
+            public HexCoordinates Coordinates;
+            public Vector3 Position;
+            public Vector3[] Corners;
+        }
+        #endif
     }
 }

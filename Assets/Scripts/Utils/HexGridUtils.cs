@@ -13,7 +13,7 @@ namespace HexGame.Utils
             return position;
         }
 
-        public static Vector3[] GetCellPoints(Vector3 position, float innerRadius, float outerRadius)
+        public static Vector3[] GetCellCorners(Vector3 position, float innerRadius, float outerRadius)
         {
             return new[] 
             {
