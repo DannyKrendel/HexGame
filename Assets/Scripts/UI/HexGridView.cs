@@ -12,7 +12,6 @@ namespace HexGame.UI
 
         private void Start()
         {
-            _cameraController.FitCameraToBounds(_hexGrid.Bounds);
             CreateLabels();
         }
 

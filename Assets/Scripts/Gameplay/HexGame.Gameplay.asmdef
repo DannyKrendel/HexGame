@@ -1,3 +1,16 @@
 {
-	"name": "HexGame.Gameplay"
+    "name": "HexGame.Gameplay",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9ab36c9e325980046ad81f72b13237c8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
