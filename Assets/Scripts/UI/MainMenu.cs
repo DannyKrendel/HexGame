@@ -8,12 +8,10 @@ namespace HexGame.UI
         [SerializeField] private Button _playButton;
         [SerializeField] private Button _settingsButtons;
 
-        protected override MenuType MenuType => MenuType.MainMenu;
+        public override MenuType Type => MenuType.MainMenu;
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
-            
             _playButton.onClick.AddListener(OnPlayButtonPressed);
             _settingsButtons.onClick.AddListener(OnSettingsButtonPressed);
         }

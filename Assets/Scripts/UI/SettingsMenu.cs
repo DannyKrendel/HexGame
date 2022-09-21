@@ -7,12 +7,10 @@ namespace HexGame.UI
     {
         [SerializeField] private Button _backButton;
         
-        protected override MenuType MenuType => MenuType.SettingsMenu;
+        public override MenuType Type => MenuType.SettingsMenu;
         
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
-            
             _backButton.onClick.AddListener(OnBackButtonPressed);
         }
         

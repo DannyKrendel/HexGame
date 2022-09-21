@@ -1,32 +1,32 @@
 ﻿using UnityEngine;
+using Zenject;
 
 namespace HexGame.UI
 {
     public abstract class MenuBase : MonoBehaviour
     {
-        [SerializeField] protected MenuManager MenuManager;
-
         public bool IsActive => gameObject.activeSelf;
         
-        protected abstract MenuType MenuType { get; }
+        public abstract MenuType Type { get; }
+
+        protected MenuManager MenuManager;
         
-        protected virtual void Awake()
+        [Inject]
+        private void Construct(MenuManager menuManager)
         {
-            MenuManager.RegisterMenu(MenuType, this);
+            MenuManager = menuManager;
         }
 
         public virtual void Show()
         {
-            if (IsActive) return;
-            
-            gameObject.SetActive(true);
+            if (!IsActive)
+                gameObject.SetActive(true);
         }
 
         public virtual void Hide()
         {
-            if (!IsActive) return;
-            
-            gameObject.SetActive(false);
+            if (IsActive)
+                gameObject.SetActive(false);
         }
     }
 }

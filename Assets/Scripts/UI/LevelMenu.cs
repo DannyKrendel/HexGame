@@ -11,12 +11,10 @@ namespace HexGame.UI
         [SerializeField] private Transform _levelButtonsRoot;
         [SerializeField] private Button _backButton;
 
-        protected override MenuType MenuType => MenuType.LevelMenu;
+        public override MenuType Type => MenuType.LevelMenu;
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
-            
             _backButton.onClick.AddListener(OnBackButtonPressed);
             
             var levelCount = 1;

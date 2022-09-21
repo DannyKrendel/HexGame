@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace HexGame.UI
 {
@@ -7,21 +8,31 @@ namespace HexGame.UI
     {
         [SerializeField] private MenuType _startMenu;
 
+        private Canvas _rootCanvas;
         private Dictionary<MenuType, MenuBase> _menuDictionary;
         private Stack<MenuType> _menuStack;
         private MenuType? _currentMenu;
 
+        [Inject]
+        private void Construct(MenuBase[] menus)
+        {
+            RegisterMenus(menus);
+        }
+        
         private void Awake()
         {
             _menuStack = new Stack<MenuType>();
-        }
-
-        private void Start()
-        {
             ShowStartMenu();
         }
 
-        public void ShowStartMenu()
+        private void RegisterMenus(MenuBase[] menus)
+        {
+            _menuDictionary = new Dictionary<MenuType, MenuBase>();
+            foreach (var menu in menus)
+                _menuDictionary.TryAdd(menu.Type, menu);
+        }
+        
+        private void ShowStartMenu()
         {
             _currentMenu = _startMenu;
             _menuStack.Push(_currentMenu.Value);
@@ -33,12 +44,6 @@ namespace HexGame.UI
                 else
                     menu.Hide();
             }
-        }
-
-        public void RegisterMenu(MenuType menuType, MenuBase menu)
-        {
-            _menuDictionary ??= new Dictionary<MenuType, MenuBase>();
-            _menuDictionary.TryAdd(menuType, menu);
         }
 
         public void Show(MenuType menuType)
