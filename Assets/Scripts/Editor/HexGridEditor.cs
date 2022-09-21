@@ -24,6 +24,15 @@ namespace HexGame.Editor
             
             using (new EditorGUILayout.HorizontalScope())
             {
+                var bgColor = GUI.backgroundColor;
+                
+                if (_hexGridCustomizer.AllowEditing)
+                    GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f);
+                if (GUILayout.Button("Editing: " + (_hexGridCustomizer.AllowEditing ? "On" : "Off")))
+                    _hexGridCustomizer.AllowEditing = !_hexGridCustomizer.AllowEditing;
+                
+                GUI.backgroundColor = bgColor;
+                
                 if (GUILayout.Button("Fill Grid")) _hexGridCustomizer.FillGrid();
                 if (GUILayout.Button("Clear Grid")) _hexGridCustomizer.ClearGrid();
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HexGame.Utils;
+using UnityEditor.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,8 +17,19 @@ namespace HexGame.Core
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField, HideInInspector] private HexGrid _hexGrid;
         [SerializeField, HideInInspector] private EditorCellData[] _editorCellDataArray;
+        [SerializeField, HideInInspector] private bool _allowEditing;
 
         private EditorCellData? _selectedCell;
+        
+        public bool AllowEditing
+        {
+            get => _allowEditing;
+            set
+            {
+                _allowEditing = value;
+                SceneView.RepaintAll();
+            }
+        }
 
         private void Awake()
         {
@@ -34,7 +46,6 @@ namespace HexGame.Core
                 SceneView.duringSceneGui += OnSceneGui;
                 EditorApplication.hierarchyChanged += OnHierarchyChanged;
                 _hexGrid.Validate += OnValidate;
-                UpdateCellBoundsSize();
             }
         }
 
@@ -50,9 +61,8 @@ namespace HexGame.Core
 
         private void OnValidate()
         {
-            if (!_cellPrefab) return; 
-
-            UpdateCellBoundsSize();
+            if (!AllowEditing || !_cellPrefab) return; 
+            
             UpdateEditorCells();
             UpdateCells();
             UpdateCellsSpriteSize();
@@ -60,14 +70,14 @@ namespace HexGame.Core
         
         private void OnHierarchyChanged()
         {
-            if (!_cellPrefab) return;
+            if (!AllowEditing || !_cellPrefab) return;
             
             UpdateCells();
         }
         
         private void OnSceneGui(SceneView sceneView)
         {
-            if (!_cellPrefab) return;
+            if (!AllowEditing || !_cellPrefab || PrefabStageUtility.GetCurrentPrefabStage() != null) return;
 
             var mousePos = Event.current.mousePosition;
             var ray = HandleUtility.GUIPointToWorldRay(mousePos);
@@ -111,19 +121,12 @@ namespace HexGame.Core
         private void UpdateCellsSpriteSize()
         {
             foreach (var cell in _hexGrid.Cells)
-            {
                 UpdateCellSpriteSize(cell);
-            }
         }
 
         private void UpdateCellSpriteSize(HexCell cell)
         {
             cell.SetLocalScale((_hexGrid.CellOuterRadius * 2) / cell.BoundsSize.y);
-        }
-
-        private void UpdateCellBoundsSize()
-        {
-            
         }
 
         private void UpdateEditorCells()
