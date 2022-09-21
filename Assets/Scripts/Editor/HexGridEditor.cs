@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HexGame.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,19 +8,24 @@ namespace HexGame.Editor
     public class HexGridEditor : UnityEditor.Editor
     {
         private HexGrid _hexGrid;
+        private HexGridCustomizer _hexGridCustomizer;
 
         private void OnEnable()
         {
             _hexGrid = target as HexGrid;
+            _hexGrid.TryGetComponent(out _hexGridCustomizer);
         }
 
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
+
+            if (_hexGridCustomizer == null) return;
+            
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Fill Grid")) _hexGrid.FillGrid();
-                if (GUILayout.Button("Clear Grid")) _hexGrid.ClearGrid();
+                if (GUILayout.Button("Fill Grid")) _hexGridCustomizer.FillGrid();
+                if (GUILayout.Button("Clear Grid")) _hexGridCustomizer.ClearGrid();
             }
         }
     }
