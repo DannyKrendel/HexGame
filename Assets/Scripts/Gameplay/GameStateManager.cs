@@ -1,15 +1,23 @@
 ﻿using UnityEngine;
+using Zenject;
 
 namespace HexGame.Gameplay
 {
     public class GameStateManager : MonoBehaviour
     {
-        [SerializeField] private HexGrid _hexGrid;
-        [SerializeField] private CameraController _cameraController;
+        private HexGrid _hexGrid;
+        private GameCamera _gameCamera;
 
+        [Inject]
+        private void Construct(HexGrid hexGrid, GameCamera gameCamera)
+        {
+            _hexGrid = hexGrid;
+            _gameCamera = gameCamera;
+        }
+        
         private void Start()
         {
-            _cameraController.FitCameraToBounds(_hexGrid.Bounds);
+            _gameCamera.FitCameraToBounds(_hexGrid.Bounds);
         }
         
         private GameStateType _currentGameState;

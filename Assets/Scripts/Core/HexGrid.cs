@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using HexGame.Utils;
 using UnityEngine;
 
 namespace HexGame

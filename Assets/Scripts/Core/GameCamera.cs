@@ -1,10 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HexGame
 {
     [RequireComponent(typeof(Camera))]
-    public class CameraController : MonoBehaviour
+    public class GameCamera : MonoBehaviour
     {
         public Camera Camera { get; private set; }
 

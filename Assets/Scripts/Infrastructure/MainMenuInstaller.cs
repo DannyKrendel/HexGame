@@ -17,14 +17,6 @@ namespace HexGame.Infrastructure
             BindLevelLoader();
         }
 
-        private void BindLevelLoader()
-        {
-            Container
-                .BindInstance(_levelLoader)
-                .AsSingle()
-                .NonLazy();
-        }
-
         private void BindMenus()
         {
             Container
@@ -38,6 +30,14 @@ namespace HexGame.Infrastructure
         {
             Container
                 .BindInstance(_menuManager)
+                .AsSingle()
+                .NonLazy();
+        }
+        
+        private void BindLevelLoader()
+        {
+            Container
+                .BindInstance(_levelLoader)
                 .AsSingle()
                 .NonLazy();
         }
