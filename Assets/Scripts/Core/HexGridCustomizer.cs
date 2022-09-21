@@ -15,7 +15,6 @@ namespace HexGame.Core
         #if UNITY_EDITOR
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField, HideInInspector] private HexGrid _hexGrid;
-        [SerializeField, HideInInspector] private Vector3 _cellBoundsSize;
         [SerializeField, HideInInspector] private EditorCellData[] _editorCellDataArray;
 
         private EditorCellData? _selectedCell;
@@ -25,7 +24,6 @@ namespace HexGame.Core
             if (!Application.IsPlaying(gameObject))
             {
                 _hexGrid = GetComponent<HexGrid>();
-                _hexGrid.Validate += OnValidate;
             }
         }
 
@@ -35,6 +33,7 @@ namespace HexGame.Core
             {
                 SceneView.duringSceneGui += OnSceneGui;
                 EditorApplication.hierarchyChanged += OnHierarchyChanged;
+                _hexGrid.Validate += OnValidate;
                 UpdateCellBoundsSize();
             }
         }
@@ -45,13 +44,13 @@ namespace HexGame.Core
             {
                 SceneView.duringSceneGui -= OnSceneGui;
                 EditorApplication.hierarchyChanged -= OnHierarchyChanged;
+                _hexGrid.Validate -= OnValidate;
             }
         }
 
         private void OnValidate()
         {
-            if (!_cellPrefab) return;
-            Debug.Log("OnValidate");
+            if (!_cellPrefab) return; 
 
             UpdateCellBoundsSize();
             UpdateEditorCells();
@@ -119,13 +118,12 @@ namespace HexGame.Core
 
         private void UpdateCellSpriteSize(HexCell cell)
         {
-            cell.SetLocalScale((_hexGrid.CellOuterRadius * 2) / _cellBoundsSize.z);
+            cell.SetLocalScale((_hexGrid.CellOuterRadius * 2) / cell.BoundsSize.y);
         }
 
         private void UpdateCellBoundsSize()
         {
-            if (_cellPrefab)
-                _cellBoundsSize = _cellPrefab.GetComponent<HexCell>().SpriteRenderer.bounds.size;
+            
         }
 
         private void UpdateEditorCells()

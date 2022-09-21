@@ -699,7 +699,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cellPrefab: {fileID: 2192754584800261326, guid: 894e740d391420f42b4a21efb90227f3, type: 3}
   _hexGrid: {fileID: 1956723062}
-  _cellBoundsSize: {x: 1.5, y: 0.20000021, z: 1.5000002}
+  _cellBoundsSize: {x: 0, y: 0, z: 0}
   _editorCellDataArray:
   - Coordinates:
       _x: 0

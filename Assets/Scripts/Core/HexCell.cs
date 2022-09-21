@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace HexGame
@@ -8,7 +9,14 @@ namespace HexGame
         [SerializeField] private HexCoordinates _coordinates;
 
         public HexCoordinates Coordinates { get => _coordinates; set => _coordinates = value; }
-        public SpriteRenderer SpriteRenderer => _spriteRenderer;
+        public Vector2 BoundsSize 
+        {
+            get
+            {
+                var worldBoundsSize = _spriteRenderer.bounds.size;
+                return new Vector2(worldBoundsSize.x, worldBoundsSize.z) / transform.localScale.x;
+            }
+        }
 
         public void SetLocalScale(float localScale)
         {
