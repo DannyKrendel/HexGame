@@ -586,6 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _menuManager: {fileID: 1563748553}
+  _levelLoader: {fileID: 0}
 --- !u!1 &634103346
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +743,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playButton: {fileID: 445551548}
-  _settingsButtons: {fileID: 211503836}
+  _settingsButton: {fileID: 211503836}
 --- !u!1 &1154383953
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,7 +930,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab934ed8036940e789592b87066d23ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelLoader: {fileID: 515801666}
   _levelButtonPrefab: {fileID: 6934731472524946386, guid: 15508bd034fe7cf45b3222ddf344b67d, type: 3}
   _levelButtonsRoot: {fileID: 1473587148}
   _backButton: {fileID: 1809157189}
@@ -1215,7 +1215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454aee0cb29b4301872efc7cdee7306a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startMenu: 0
+  _startMenu: 1
 --- !u!4 &1563748554
 Transform:
   m_ObjectHideFlags: 0

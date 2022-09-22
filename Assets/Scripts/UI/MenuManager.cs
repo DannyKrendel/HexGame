@@ -10,8 +10,8 @@ namespace HexGame.UI
 
         private Canvas _rootCanvas;
         private Dictionary<MenuType, MenuBase> _menuDictionary;
-        private Stack<MenuType> _menuStack;
-        private MenuType? _currentMenu;
+        private Stack<MenuBase> _menuStack;
+        private MenuBase _currentMenu;
 
         [Inject]
         private void Construct(MenuBase[] menus)
@@ -21,7 +21,7 @@ namespace HexGame.UI
         
         private void Awake()
         {
-            _menuStack = new Stack<MenuType>();
+            _menuStack = new Stack<MenuBase>();
             ShowStartMenu();
         }
 
@@ -34,8 +34,8 @@ namespace HexGame.UI
         
         private void ShowStartMenu()
         {
-            _currentMenu = _startMenu;
-            _menuStack.Push(_currentMenu.Value);
+            if (_menuDictionary.TryGetValue(_startMenu, out _currentMenu))
+                _menuStack.Push(_currentMenu);
 
             foreach (var (menuType, menu) in _menuDictionary)
             {
@@ -50,33 +50,32 @@ namespace HexGame.UI
         {
             if (_menuDictionary.TryGetValue(menuType, out var menu))
             {
-                menu.Show();
+                if (_currentMenu != null)
+                    _currentMenu.Hide();
 
-                if (_currentMenu != null && _menuDictionary.TryGetValue(_currentMenu.Value, out var previousMenu))
-                    previousMenu.Hide();
-
-                _currentMenu = menuType;
-                _menuStack.Push(_currentMenu.Value);
+                _currentMenu = menu;
+                _currentMenu.Show();
+                _menuStack.Push(_currentMenu);
             }
         }
 
         public void HideCurrent()
         {
-            if (_currentMenu != null && _menuStack.Count > 1 && _menuStack.TryPop(out _) && _menuStack.TryPeek(out var previousMenuType))
+            if (_currentMenu != null && _menuStack.TryPop(out _))
             {
-                if (_menuDictionary.TryGetValue(_currentMenu.Value, out var currentMenu))
-                    currentMenu.Hide();
+                _currentMenu.Hide();
                 
-                if (_menuDictionary.TryGetValue(previousMenuType, out var previousMenu))
-                    previousMenu.Show();
-
-                _currentMenu = previousMenuType;
+                if (_menuStack.TryPeek(out var previousMenu))
+                {
+                    _currentMenu = previousMenu;
+                    _currentMenu.Show();
+                }
             }
         }
     }
     
     public enum MenuType
     {
-        MainMenu, LevelMenu, SettingsMenu
+        None, MainMenu, LevelMenu, SettingsMenu, PauseMenu
     }
 }

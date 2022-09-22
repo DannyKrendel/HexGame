@@ -1,4 +1,5 @@
 ﻿using HexGame.Gameplay;
+using HexGame.UI;
 using UnityEngine;
 using Zenject;
 
@@ -8,12 +9,15 @@ namespace HexGame.Infrastructure
     {
         [SerializeField] private GameCamera _gameCameraPrefab;
         [SerializeField] private HexGrid _hexGrid;
+        [SerializeField] private MenuManager _menuManager;
         
         public override void InstallBindings()
         {
             BindGameCamera();
             BindHexGrid();
             BindGameStateManager();
+            BindMenus();
+            BindMenuManager();
         }
 
         private void BindGameCamera()
@@ -38,6 +42,23 @@ namespace HexGame.Infrastructure
             Container
                 .Bind<GameStateManager>()
                 .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
+        }
+        
+        private void BindMenus()
+        {
+            Container
+                .Bind<MenuBase>()
+                .FromComponentsInHierarchy()
+                .AsCached()
+                .NonLazy();
+        }
+
+        private void BindMenuManager()
+        {
+            Container
+                .BindInstance(_menuManager)
                 .AsSingle()
                 .NonLazy();
         }

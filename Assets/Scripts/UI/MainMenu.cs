@@ -6,14 +6,14 @@ namespace HexGame.UI
     public class MainMenu : MenuBase
     {
         [SerializeField] private Button _playButton;
-        [SerializeField] private Button _settingsButtons;
+        [SerializeField] private Button _settingsButton;
 
         public override MenuType Type => MenuType.MainMenu;
 
         private void Awake()
         {
             _playButton.onClick.AddListener(OnPlayButtonPressed);
-            _settingsButtons.onClick.AddListener(OnSettingsButtonPressed);
+            _settingsButton.onClick.AddListener(OnSettingsButtonPressed);
         }
 
         private void OnPlayButtonPressed()
@@ -23,7 +23,7 @@ namespace HexGame.UI
 
         private void OnSettingsButtonPressed()
         {
-            
+            MenuManager.Show(MenuType.SettingsMenu);
         }
     }
 }
