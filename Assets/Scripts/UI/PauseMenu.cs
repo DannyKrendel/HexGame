@@ -1,4 +1,4 @@
-﻿using HexGame.Gameplay;
+﻿using HexGame.Gameplay.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -11,12 +11,12 @@ namespace HexGame.UI
 
         public override MenuType Type => MenuType.PauseMenu;
         
-        private GameStateManager _gameStateManager;
+        private GameStateMachine _gameStateMachine;
 
         [Inject]
-        private void Construct(GameStateManager gameStateManager)
+        private void Construct(GameStateMachine gameStateMachine)
         {
-            _gameStateManager = gameStateManager;
+            _gameStateMachine = gameStateMachine;
         }
         
         private void Awake()
@@ -26,7 +26,7 @@ namespace HexGame.UI
 
         private void OnResumeButtonPressed()
         {
-            _gameStateManager.UpdateGameState(GameStateType.Gameplay);
+            _gameStateMachine.GoToPreviousState();
             MenuManager.HideCurrent();
         }
     }

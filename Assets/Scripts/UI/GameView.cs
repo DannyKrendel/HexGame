@@ -1,5 +1,4 @@
-﻿using System;
-using HexGame.Gameplay;
+﻿using HexGame.Gameplay.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -10,13 +9,13 @@ namespace HexGame.UI
     {
         [SerializeField] private Button _pauseButton;
 
-        private GameStateManager _gameStateManager;
+        private GameStateMachine _gameStateMachine;
         private MenuManager _menuManager;
 
         [Inject]
-        private void Construct(GameStateManager gameStateManager, MenuManager menuManager)
+        private void Construct(GameStateMachine gameStateMachine, MenuManager menuManager)
         {
-            _gameStateManager = gameStateManager;
+            _gameStateMachine = gameStateMachine;
             _menuManager = menuManager;
         }
 
@@ -27,7 +26,7 @@ namespace HexGame.UI
 
         private void OnPauseButtonPressed()
         {
-            _gameStateManager.UpdateGameState(GameStateType.Pause);
+            _gameStateMachine.ChangeState(GameStateType.Pause);
             _menuManager.Show(MenuType.PauseMenu);
         }
     }

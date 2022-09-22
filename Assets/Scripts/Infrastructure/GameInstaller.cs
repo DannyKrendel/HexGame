@@ -1,4 +1,4 @@
-﻿using HexGame.Gameplay;
+﻿using HexGame.Gameplay.StateMachine;
 using HexGame.UI;
 using UnityEngine;
 using Zenject;
@@ -16,6 +16,7 @@ namespace HexGame.Infrastructure
             BindGameCamera();
             BindHexGrid();
             BindGameStateManager();
+            BindGameStates();
             BindMenus();
             BindMenuManager();
         }
@@ -40,8 +41,20 @@ namespace HexGame.Infrastructure
         private void BindGameStateManager()
         {
             Container
-                .Bind<GameStateManager>()
+                .Bind<GameStateMachine>()
                 .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
+        }
+        
+        private void BindGameStates()
+        {
+            Container
+                .Bind<GameStateBase>().To<GameStateGameplay>()
+                .AsSingle()
+                .NonLazy();
+            Container
+                .Bind<GameStateBase>().To<GameStatePause>()
                 .AsSingle()
                 .NonLazy();
         }
