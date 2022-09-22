@@ -1,3 +1,4 @@
+using HexGame.Input;
 using Zenject;
 
 namespace HexGame.Infrastructure
@@ -6,7 +7,15 @@ namespace HexGame.Infrastructure
     {
         public override void InstallBindings()
         {
-            
+            BindGameInput();
+        }
+
+        private void BindGameInput()
+        {
+            Container
+                .Bind<GameInput>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

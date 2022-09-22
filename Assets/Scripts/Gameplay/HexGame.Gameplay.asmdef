@@ -2,7 +2,8 @@
     "name": "HexGame.Gameplay",
     "rootNamespace": "",
     "references": [
-        "GUID:9ab36c9e325980046ad81f72b13237c8"
+        "GUID:9ab36c9e325980046ad81f72b13237c8",
+        "GUID:00508e62d293be54c986012b31c2845f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
