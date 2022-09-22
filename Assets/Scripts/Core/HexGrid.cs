@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace HexGame
@@ -34,6 +35,18 @@ namespace HexGame
         {
             CalculateInnerRadius();
             Validate?.Invoke();
+        }
+
+        public bool TryGetWorldPosition(HexCoordinates coordinates, out Vector3 position)
+        {
+            position = Vector3.zero;
+            
+            var foundCell = _cells.FirstOrDefault(x => x.Coordinates == coordinates);
+            if (foundCell == null) return false;
+            
+            position = foundCell.transform.position;
+            return true;
+
         }
 
         private void CalculateInnerRadius()

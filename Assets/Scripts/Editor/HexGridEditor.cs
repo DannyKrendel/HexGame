@@ -1,5 +1,4 @@
-﻿using HexGame.Core;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace HexGame.Editor

@@ -2,7 +2,8 @@
     "name": "HexGame",
     "rootNamespace": "",
     "references": [
-        "GUID:b531026d2c40ed0479f913c6e645e46e"
+        "GUID:b531026d2c40ed0479f913c6e645e46e",
+        "GUID:94657ef60c7b88f46bca2f127588fd31"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

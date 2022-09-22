@@ -7,7 +7,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-namespace HexGame.Core
+namespace HexGame
 {
     [ExecuteAlways]
     [RequireComponent(typeof(HexGrid))]

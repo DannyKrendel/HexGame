@@ -1,4 +1,5 @@
-﻿using HexGame.Gameplay.StateMachine;
+﻿using HexGame.Gameplay;
+using HexGame.Gameplay.StateMachine;
 using HexGame.UI;
 using UnityEngine;
 using Zenject;
@@ -7,9 +8,17 @@ namespace HexGame.Infrastructure
 {
     public class GameInstaller : MonoInstaller
     {
-        [SerializeField] private GameCamera _gameCameraPrefab;
         [SerializeField] private HexGrid _hexGrid;
         [SerializeField] private MenuManager _menuManager;
+        [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
+
+        private GameSettings _gameSettings;
+
+        [Inject]
+        private void Construct(GameSettings gameSettings)
+        {
+            _gameSettings = gameSettings;
+        }
         
         public override void InstallBindings()
         {
@@ -19,13 +28,15 @@ namespace HexGame.Infrastructure
             BindGameStates();
             BindMenus();
             BindMenuManager();
+            BindPlayerController();
+            BindSpawnPoint();
         }
 
         private void BindGameCamera()
         {
             Container
                 .Bind<GameCamera>()
-                .FromComponentInNewPrefab(_gameCameraPrefab)
+                .FromComponentInNewPrefab(_gameSettings.GameCameraPrefab)
                 .AsSingle()
                 .NonLazy();
         }
@@ -72,6 +83,23 @@ namespace HexGame.Infrastructure
         {
             Container
                 .BindInstance(_menuManager)
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindPlayerController()
+        {
+            Container
+                .BindIFactory<PlayerController>()
+                .FromComponentInNewPrefab(_gameSettings.PlayerPrefab)
+                .AsSingle()
+                .NonLazy();
+        }
+        
+        private void BindSpawnPoint()
+        {
+            Container
+                .BindInstance(_playerSpawnPoint)
                 .AsSingle()
                 .NonLazy();
         }
