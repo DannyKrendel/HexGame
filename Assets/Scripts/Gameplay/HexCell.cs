@@ -7,22 +7,15 @@ using UnityEngine;
 namespace HexGame.Gameplay
 {
     [ExecuteAlways]
-    public class HexCell : MonoBehaviour
+    public class HexCell : MonoBehaviour, ISelectable
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
+        [SerializeField] private GameObject _selectGameObject;
         [SerializeField, HideInInspector] private Grid _grid;
 
         public HexCoordinates Coordinates => _coordinates;
-        
-        public Vector2 BoundsSize 
-        {
-            get
-            {
-                var worldBoundsSize = _spriteRenderer.bounds.size;
-                return new Vector2(worldBoundsSize.x, worldBoundsSize.y) / transform.localScale.x;
-            }
-        }
+        public bool IsSelected { get; private set; }
 
         private const float HexRatio = 0.866025404f;
         
@@ -47,6 +40,20 @@ namespace HexGame.Gameplay
                 }
             }
             #endif
+        }
+        
+        public void Select()
+        {
+            if (IsSelected) return;
+            _selectGameObject.SetActive(true);
+            IsSelected = true;
+        }
+        
+        public void Deselect()
+        {
+            if (!IsSelected) return;
+            _selectGameObject.SetActive(false);
+            IsSelected = false;
         }
     }
 }

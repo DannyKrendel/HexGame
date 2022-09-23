@@ -28,7 +28,7 @@ namespace HexGame.Infrastructure
             BindGameStates();
             BindMenus();
             BindMenuManager();
-            BindPlayerController();
+            BindPlayer();
             BindSpawnPoint();
         }
 
@@ -87,10 +87,10 @@ namespace HexGame.Infrastructure
                 .NonLazy();
         }
 
-        private void BindPlayerController()
+        private void BindPlayer()
         {
             Container
-                .BindIFactory<PlayerController>()
+                .BindIFactory<Player>()
                 .FromComponentInNewPrefab(_gameSettings.PlayerPrefab)
                 .AsSingle()
                 .NonLazy();
@@ -99,7 +99,8 @@ namespace HexGame.Infrastructure
         private void BindSpawnPoint()
         {
             Container
-                .BindInstance(_playerSpawnPoint)
+                .Bind<ISpawnPoint<Player>>()
+                .FromInstance(_playerSpawnPoint)
                 .AsSingle()
                 .NonLazy();
         }

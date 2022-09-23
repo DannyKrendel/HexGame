@@ -3,7 +3,7 @@ using Zenject;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerController : MonoBehaviour, IHexGridActor
+    public class PlayerController : MonoBehaviour
     {
         private HexGrid _hexGrid;
         

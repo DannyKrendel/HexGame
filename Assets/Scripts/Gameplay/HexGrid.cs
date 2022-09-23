@@ -39,7 +39,15 @@ namespace HexGame.Gameplay
             
             position = foundCell.transform.position;
             return true;
+        }
 
+        public bool TryGetCellByWorldPosition(Vector3 position, out HexCell cell)
+        {
+            var cellPos = _grid.WorldToCell(position);
+            var cellCoords = HexCoordinates.FromOffsetCoordinates(cellPos.x, cellPos.y);
+            cell = _cells.FirstOrDefault(x => x.Coordinates == cellCoords);
+
+            return cell != null;
         }
 
         public List<HexCell> GetNeighbors(HexCoordinates coordinates, int range = 1)

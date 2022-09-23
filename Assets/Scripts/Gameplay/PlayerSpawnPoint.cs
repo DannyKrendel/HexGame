@@ -4,27 +4,26 @@ using Zenject;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerSpawnPoint : MonoBehaviour
+    public class PlayerSpawnPoint : MonoBehaviour, ISpawnPoint<Player>
     {
         [SerializeField] private HexCoordinates _coordinates;
         
-        private IFactory<PlayerController> _playerFactory;
+        public event Action<Player> Spawned;
+        
+        private IFactory<Player> _playerFactory;
 
         [Inject]
-        private void Construct(IFactory<PlayerController> playerFactory)
+        private void Construct(IFactory<Player> playerFactory)
         {
             _playerFactory = playerFactory;
         }
 
-        private void Start()
-        {
-            Spawn();
-        }
-
-        public void Spawn()
+        public Player Spawn()
         {
             var player = _playerFactory.Create();
-            player.MoveTo(_coordinates);
+            player.PlayerController.MoveTo(_coordinates);
+            Spawned?.Invoke(player);
+            return player;
         }
     }
 }
