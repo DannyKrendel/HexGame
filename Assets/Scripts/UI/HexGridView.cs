@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using HexGame.Gameplay;
+using TMPro;
 using UnityEngine;
 
 namespace HexGame.UI

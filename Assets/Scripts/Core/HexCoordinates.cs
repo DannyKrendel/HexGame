@@ -18,11 +18,17 @@ namespace HexGame
             _x = x;
             _z = z;
         }
+
+        public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
+        public static Vector3Int ToOffsetCoordinates(int x, int z) => new(x + z / 2, z);
         
         public override string ToString() => $"({X}, {Y}, {Z})";
         public string ToStringOnSeparateLines() => $"{X}\n{Y}\n{Z}";
-        
-        public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
+
+        public static HexCoordinates operator -(HexCoordinates left, HexCoordinates right)
+        {
+            return new HexCoordinates(left.X - right.X, left.Z - right.Z);
+        }
         
         public bool Equals(HexCoordinates other)
         {
