@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace HexGame.Gameplay
 {
-    public interface ISpawnPoint<out T> where T : Component
+    public interface ISpawnPoint<in T> where T : Component
     {
-        event Action<T> Spawned;
-
-        T Spawn();
+        void Spawn(T actor);
     }
 }

@@ -8,13 +8,19 @@ using UnityEngine;
 namespace HexGame.Gameplay
 {
     [ExecuteAlways]
-    public class HexCell : MonoBehaviour, IHighlight
+    public class HexCell : MonoBehaviour, IHexGridActor, IHighlight
     {
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
         [SerializeField, Range(0, 10)] private int _startDurability = 1;
-        [SerializeField] private GameObject _selectGameObject;
+        [SerializeField] private GameObject _normalState;
+        [SerializeField] private GameObject _selectedState;
         [SerializeField, HideInInspector] private Grid _grid;
 
+        public event Action Highlighted;
+        public event Action HighlightCleared;
+        public event Action Broke;
+        public event Action Reset;
+        
         public HexCoordinates Coordinates => _coordinates;
         public bool IsHighlighted { get; private set; }
         public int Durability { get; private set; }
@@ -52,27 +58,35 @@ namespace HexGame.Gameplay
         public void Highlight()
         {
             if (IsHighlighted) return;
-            _selectGameObject.SetActive(true);
+            _selectedState.SetActive(true);
             IsHighlighted = true;
+            Highlighted?.Invoke();
         }
         
         public void ClearHighlight()
         {
             if (!IsHighlighted) return;
-            _selectGameObject.SetActive(false);
+            _selectedState.SetActive(false);
             IsHighlighted = false;
+            HighlightCleared?.Invoke();
         }
 
         public void SubtractDurability(int amount = 1)
         {
             Durability = Mathf.Max(Durability - amount, 0);
             if (Durability == 0)
-                Break();
+            {
+                ClearHighlight();
+                Broke?.Invoke();
+            }
         }
 
-        private void Break()
+        public void ResetState()
         {
-            gameObject.SetActive(false);
+            ClearHighlight();
+            Durability = _startDurability;
+            gameObject.SetActive(true);
+            Reset?.Invoke();
         }
     }
 }

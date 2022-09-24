@@ -4,8 +4,10 @@ using Zenject;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour, IHexGridActor
     {
+        [SerializeField] private float _moveDuration = .5f;
+        
         public HexCoordinates Coordinates { get; private set; }
         public event Action Moved;
         
@@ -13,7 +15,6 @@ namespace HexGame.Gameplay
         private Vector3 _startPosition;
         private Vector3? _destinationPosition;
         private HexCoordinates? _destinationCoordinates;
-        private float _moveDuration = .5f;
         private float _moveTimer;
 
         [Inject]

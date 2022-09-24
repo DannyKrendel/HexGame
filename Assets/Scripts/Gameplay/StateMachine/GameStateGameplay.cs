@@ -11,21 +11,21 @@ namespace HexGame.Gameplay.StateMachine
         private readonly HexGrid _hexGrid;
         private readonly GameCamera _gameCamera;
         private readonly InputManager _inputManager;
-        private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly GridHighlighter _gridHighlighter;
+        private readonly GameplayService _gameplayService;
 
         private Player _player;
         private List<HexCell> _cellsForMove;
         
         public GameStateGameplay(GameStateMachine gameStateMachine, HexGrid hexGrid, GameCamera gameCamera, 
-            InputManager inputManager, ISpawnPoint<Player> playerSpawnPoint, GridHighlighter gridHighlighter)
+            InputManager inputManager, GridHighlighter gridHighlighter, GameplayService gameplayService) 
             : base(gameStateMachine)
         {
             _hexGrid = hexGrid;
             _gameCamera = gameCamera;
             _inputManager = inputManager;
-            _playerSpawnPoint = playerSpawnPoint;
             _gridHighlighter = gridHighlighter;
+            _gameplayService = gameplayService;
         }
 
         public override void Enter()
@@ -33,7 +33,8 @@ namespace HexGame.Gameplay.StateMachine
             _inputManager.Enable();
             _inputManager.Click += OnClick;
 
-            _player = _playerSpawnPoint.Spawn();
+            _gameplayService.SpawnPlayer();
+            _player = _gameplayService.Player;
             _player.Movement.Moved += OnPlayerMoved;
             
             _gameCamera.FitCameraToBounds(_hexGrid.Bounds);
@@ -50,7 +51,7 @@ namespace HexGame.Gameplay.StateMachine
         private void OnClick(Vector2 pointerPosition)
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
-            if (_hexGrid.TryGetCell(worldPos, out var clickedCell) && _cellsForMove.Contains(clickedCell))
+            if (_hexGrid.TryGetCell(worldPos, out var clickedCell) && CanPlayerMoveToCell(clickedCell))
             {
                 _hexGrid.TryGetCell(_player.Movement.Coordinates, out var playerCell);
                 _player.Movement.Move(clickedCell.Coordinates);
@@ -60,13 +61,24 @@ namespace HexGame.Gameplay.StateMachine
 
         private void OnPlayerMoved()
         {
-            HighlightNeighborCells();
+            UpdateCellsForMove();
+            _gridHighlighter.Highlight(_cellsForMove);
         }
 
-        private void HighlightNeighborCells()
+        private bool CanPlayerMoveToCell(HexCell cell)
         {
-            _cellsForMove = _hexGrid.GetNeighbors(_player.Movement.Coordinates);
-            _gridHighlighter.Highlight(_cellsForMove);
+            return _cellsForMove.Contains(cell);
+        }
+
+        private void UpdateCellsForMove()
+        {
+            _cellsForMove = new List<HexCell>();
+            var neighbors = _hexGrid.GetNeighbors(_player.Movement.Coordinates);
+            foreach (var cell in neighbors)
+            {
+                if (cell.Durability > 0)
+                    _cellsForMove.Add(cell);
+            }
         }
     }
 }

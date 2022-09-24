@@ -33,6 +33,7 @@ namespace HexGame.Infrastructure
             BindSpawnPoint();
             BindGridHighlighter();
             BindInputManager();
+            BindGameplayService();
         }
 
         private void BindGameCamera()
@@ -120,6 +121,14 @@ namespace HexGame.Infrastructure
         {
             Container
                 .Bind<InputManager>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindGameplayService()
+        {
+            Container
+                .Bind<GameplayService>()
                 .AsSingle()
                 .NonLazy();
         }
