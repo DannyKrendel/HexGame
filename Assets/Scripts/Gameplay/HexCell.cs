@@ -1,3 +1,4 @@
+using System;
 using Polyternity;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -10,14 +11,21 @@ namespace HexGame.Gameplay
     public class HexCell : MonoBehaviour, IHighlight
     {
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
+        [SerializeField, Range(0, 10)] private int _startDurability = 1;
         [SerializeField] private GameObject _selectGameObject;
         [SerializeField, HideInInspector] private Grid _grid;
 
         public HexCoordinates Coordinates => _coordinates;
         public bool IsHighlighted { get; private set; }
+        public int Durability { get; private set; }
 
         private const float HexRatio = 0.866025404f;
-        
+
+        private void Awake()
+        {
+            Durability = _startDurability;
+        }
+
         private void Update()
         {
             #if UNITY_EDITOR
@@ -53,6 +61,18 @@ namespace HexGame.Gameplay
             if (!IsHighlighted) return;
             _selectGameObject.SetActive(false);
             IsHighlighted = false;
+        }
+
+        public void SubtractDurability(int amount = 1)
+        {
+            Durability = Mathf.Max(Durability - amount, 0);
+            if (Durability == 0)
+                Break();
+        }
+
+        private void Break()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

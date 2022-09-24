@@ -51,7 +51,11 @@ namespace HexGame.Gameplay.StateMachine
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             if (_hexGrid.TryGetCell(worldPos, out var clickedCell) && _cellsForMove.Contains(clickedCell))
+            {
+                _hexGrid.TryGetCell(_player.Movement.Coordinates, out var playerCell);
                 _player.Movement.Move(clickedCell.Coordinates);
+                playerCell.SubtractDurability();
+            }
         }
 
         private void OnPlayerMoved()

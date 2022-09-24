@@ -1,5 +1,6 @@
 ﻿using HexGame.Gameplay;
 using HexGame.Gameplay.StateMachine;
+using HexGame.Input;
 using HexGame.UI;
 using UnityEngine;
 using Zenject;
@@ -31,6 +32,7 @@ namespace HexGame.Infrastructure
             BindPlayer();
             BindSpawnPoint();
             BindGridHighlighter();
+            BindInputManager();
         }
 
         private void BindGameCamera()
@@ -110,6 +112,14 @@ namespace HexGame.Infrastructure
         {
             Container
                 .Bind<GridHighlighter>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindInputManager()
+        {
+            Container
+                .Bind<InputManager>()
                 .AsSingle()
                 .NonLazy();
         }
