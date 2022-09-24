@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using HexGame.Input;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace HexGame.Gameplay.StateMachine
 {
@@ -11,7 +10,7 @@ namespace HexGame.Gameplay.StateMachine
 
         private readonly HexGrid _hexGrid;
         private readonly GameCamera _gameCamera;
-        private readonly GameInput _gameInput;
+        private readonly InputManager _inputManager;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly GridHighlighter _gridHighlighter;
 
@@ -19,19 +18,20 @@ namespace HexGame.Gameplay.StateMachine
         private List<HexCell> _cellsForMove;
         
         public GameStateGameplay(GameStateMachine gameStateMachine, HexGrid hexGrid, GameCamera gameCamera, 
-            GameInput gameInput, ISpawnPoint<Player> playerSpawnPoint, GridHighlighter gridHighlighter) : base(gameStateMachine)
+            InputManager inputManager, ISpawnPoint<Player> playerSpawnPoint, GridHighlighter gridHighlighter)
+            : base(gameStateMachine)
         {
             _hexGrid = hexGrid;
             _gameCamera = gameCamera;
-            _gameInput = gameInput;
+            _inputManager = inputManager;
             _playerSpawnPoint = playerSpawnPoint;
             _gridHighlighter = gridHighlighter;
         }
 
         public override void Enter()
         {
-            _gameInput.Enable();
-            _gameInput.UI.Click.performed += OnClick;
+            _inputManager.Enable();
+            _inputManager.Click += OnClick;
 
             _player = _playerSpawnPoint.Spawn();
             _player.Movement.Moved += OnPlayerMoved;
@@ -43,17 +43,14 @@ namespace HexGame.Gameplay.StateMachine
 
         public override void Exit()
         {
-            _gameInput.UI.Click.performed -= OnClick;
+            _inputManager.Click -= OnClick;
             _player.Movement.Moved -= OnPlayerMoved;
         }
 
-        private void OnClick(InputAction.CallbackContext context)
+        private void OnClick(Vector2 pointerPosition)
         {
-            if (context.ReadValue<float>() == 0) return;
-            
-            var mousePos = _gameInput.UI.Point.ReadValue<Vector2>();
-            var worldMousePos = _gameCamera.Camera.ScreenToWorldPoint(mousePos);
-            if (_hexGrid.TryGetCell(worldMousePos, out var clickedCell) && _cellsForMove.Contains(clickedCell))
+            var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
+            if (_hexGrid.TryGetCell(worldPos, out var clickedCell) && _cellsForMove.Contains(clickedCell))
                 _player.Movement.Move(clickedCell.Coordinates);
         }
 

@@ -4,23 +4,23 @@ namespace HexGame.Gameplay.StateMachine
 {
     public class GameStatePause : GameStateBase
     {
-        private readonly GameInput _gameInput;
+        private readonly InputManager _inputManager;
         
         public override GameStateType Type => GameStateType.Pause;
 
-        public GameStatePause(GameStateMachine gameStateMachine, GameInput gameInput) : base(gameStateMachine)
+        public GameStatePause(GameStateMachine gameStateMachine, InputManager inputManager) : base(gameStateMachine)
         {
-            _gameInput = gameInput;
+            _inputManager = inputManager;
         }
 
         public override void Enter()
         {
-            _gameInput.Disable();
+            _inputManager.Disable();
         }
 
         public override void Exit()
         {
-            _gameInput.Enable();
+            _inputManager.Enable();
         }
     }
 }
