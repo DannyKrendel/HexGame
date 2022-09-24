@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Zenject;
@@ -10,6 +11,9 @@ namespace HexGame.Gameplay.StateMachine
         private GameStateBase _currentState;
         private GameStateBase _previousState;
         private Dictionary<GameStateType, GameStateBase> _states;
+
+        public GameStateType CurrentState { get; private set; }
+        public event Action StateChanged;
 
         [Inject]
         private void Construct(List<GameStateBase> states)
@@ -48,6 +52,9 @@ namespace HexGame.Gameplay.StateMachine
 
             _previousState?.Exit();
             _currentState.Enter();
+            
+            CurrentState = _currentState.Type;
+            StateChanged?.Invoke();
         }
 
         public void GoToPreviousState()
@@ -58,11 +65,14 @@ namespace HexGame.Gameplay.StateMachine
             
             _previousState?.Exit();
             _currentState.Enter();
+            
+            CurrentState = _currentState.Type;
+            StateChanged?.Invoke();
         }
     }
 
     public enum GameStateType
     {
-        Gameplay, Pause
+        Gameplay, Pause, Win
     }
 }

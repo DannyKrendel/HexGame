@@ -72,6 +72,10 @@ namespace HexGame.Infrastructure
                 .Bind<GameStateBase>().To<GameStatePause>()
                 .AsSingle()
                 .NonLazy();
+            Container
+                .Bind<GameStateBase>().To<GameStateWin>()
+                .AsSingle()
+                .NonLazy();
         }
         
         private void BindMenus()

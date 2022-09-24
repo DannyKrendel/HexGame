@@ -48,6 +48,12 @@ namespace HexGame.Gameplay.StateMachine
             _player.Movement.Moved -= OnPlayerMoved;
         }
 
+        public override void Update()
+        {
+            if (_gameplayService.IsWin())
+                GameStateMachine.ChangeState(GameStateType.Win);
+        }
+
         private void OnClick(Vector2 pointerPosition)
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
@@ -67,7 +73,7 @@ namespace HexGame.Gameplay.StateMachine
 
         private bool CanPlayerMoveToCell(HexCell cell)
         {
-            return _cellsForMove.Contains(cell);
+            return !_player.Movement.IsMoving && _cellsForMove.Contains(cell);
         }
 
         private void UpdateCellsForMove()

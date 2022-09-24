@@ -10,6 +10,7 @@ namespace HexGame.UI
     {
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _restartButton;
+        [SerializeField] private WinView _winView;
 
         private GameStateMachine _gameStateMachine;
         private MenuManager _menuManager;
@@ -27,6 +28,22 @@ namespace HexGame.UI
         {
             _pauseButton.onClick.AddListener(OnPauseButtonPressed);
             _restartButton.onClick.AddListener(OnRestartButtonPressed);
+        }
+
+        private void OnEnable()
+        {
+            _gameStateMachine.StateChanged += OnStateChanged;
+        }
+        
+        private void OnDisable()
+        {
+            _gameStateMachine.StateChanged -= OnStateChanged;
+        }
+
+        private void OnStateChanged()
+        {
+            if (_gameStateMachine.CurrentState == GameStateType.Win)
+                _winView.gameObject.SetActive(true);
         }
 
         private void OnPauseButtonPressed()

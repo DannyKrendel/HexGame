@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using System.Linq;
+using Zenject;
 
 namespace HexGame.Gameplay
 {
@@ -31,6 +32,17 @@ namespace HexGame.Gameplay
                 cell.ResetState();
             
             _playerSpawnPoint.Spawn(Player);
+        }
+
+        public bool IsWin()
+        {
+            var activeCellCount = 0;
+            foreach (var cell in _hexGrid.Cells)
+            {
+                if (cell.gameObject.activeSelf)
+                    activeCellCount++;
+            }
+            return activeCellCount == 1;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace HexGame.Gameplay
         [SerializeField] private float _moveDuration = .5f;
         
         public HexCoordinates Coordinates { get; private set; }
+        public bool IsMoving { get; private set; }
         public event Action Moved;
         
         private HexGrid _hexGrid;
@@ -58,6 +59,7 @@ namespace HexGame.Gameplay
             _destinationPosition = destinationPosition;
             _destinationCoordinates = destinationCoordinates;
             _moveTimer = _moveDuration;
+            IsMoving = true;
         }
 
         private void StopMoving()
@@ -67,6 +69,7 @@ namespace HexGame.Gameplay
             _moveTimer = 0;
             _destinationPosition = null;
             _destinationCoordinates = null;
+            IsMoving = false;
             Moved?.Invoke();
         }
     }
