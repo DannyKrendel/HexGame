@@ -7,15 +7,15 @@ using UnityEngine;
 namespace HexGame.Gameplay
 {
     [ExecuteAlways]
-    public class HexCell : MonoBehaviour, ISelectable
+    public class HexCell : MonoBehaviour, IHighlight
     {
-        [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private GameObject _selectGameObject;
         [SerializeField, HideInInspector] private Grid _grid;
 
         public HexCoordinates Coordinates => _coordinates;
-        public bool IsSelected { get; private set; }
+        public bool IsHighlighted { get; private set; }
 
         private const float HexRatio = 0.866025404f;
         
@@ -42,18 +42,18 @@ namespace HexGame.Gameplay
             #endif
         }
         
-        public void Select()
+        public void Highlight()
         {
-            if (IsSelected) return;
+            if (IsHighlighted) return;
             _selectGameObject.SetActive(true);
-            IsSelected = true;
+            IsHighlighted = true;
         }
         
-        public void Deselect()
+        public void ClearHighlight()
         {
-            if (!IsSelected) return;
+            if (!IsHighlighted) return;
             _selectGameObject.SetActive(false);
-            IsSelected = false;
+            IsHighlighted = false;
         }
     }
 }

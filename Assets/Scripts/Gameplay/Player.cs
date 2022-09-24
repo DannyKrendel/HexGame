@@ -4,8 +4,8 @@ namespace HexGame.Gameplay
 {
     public class Player : MonoBehaviour
     {
-        [SerializeField] private PlayerController _playerController;
+        [SerializeField] private PlayerMovement _movement;
 
-        public PlayerController PlayerController => _playerController;
+        public PlayerMovement Movement => _movement;
     }
 }

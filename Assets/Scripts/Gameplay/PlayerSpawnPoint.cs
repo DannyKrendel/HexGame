@@ -21,7 +21,7 @@ namespace HexGame.Gameplay
         public Player Spawn()
         {
             var player = _playerFactory.Create();
-            player.PlayerController.MoveTo(_coordinates);
+            player.Movement.Move(_coordinates, true);
             Spawned?.Invoke(player);
             return player;
         }

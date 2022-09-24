@@ -14,9 +14,12 @@ namespace HexGame.Gameplay
         public HexCell[] Cells => _cells;
         public Bounds Bounds => _bounds;
 
+        private Dictionary<HexCoordinates, HexCell> _cellDictionary;
+
         private void Awake()
         {
             _grid = GetComponent<Grid>();
+            _cellDictionary = _cells.ToDictionary(c => c.Coordinates);
         }
 
         private void Update()
@@ -41,13 +44,16 @@ namespace HexGame.Gameplay
             return true;
         }
 
-        public bool TryGetCellByWorldPosition(Vector3 position, out HexCell cell)
+        public bool TryGetCell(Vector3 worldPosition, out HexCell cell)
         {
-            var cellPos = _grid.WorldToCell(position);
+            var cellPos = _grid.WorldToCell(worldPosition);
             var cellCoords = HexCoordinates.FromOffsetCoordinates(cellPos.x, cellPos.y);
-            cell = _cells.FirstOrDefault(x => x.Coordinates == cellCoords);
+            return _cellDictionary.TryGetValue(cellCoords, out cell);;
+        }
 
-            return cell != null;
+        public bool TryGetCell(HexCoordinates coordinates, out HexCell cell)
+        {
+            return _cellDictionary.TryGetValue(coordinates, out cell);
         }
 
         public List<HexCell> GetNeighbors(HexCoordinates coordinates, int range = 1)
@@ -66,6 +72,7 @@ namespace HexGame.Gameplay
             return neighbors;
         }
 
+        #if UNITY_EDITOR
         private void UpdateCells()
         {
             _cells = GetComponentsInChildren<HexCell>();
@@ -81,5 +88,6 @@ namespace HexGame.Gameplay
             foreach (var cell in _cells)
                 _bounds.Encapsulate(new Bounds(cell.transform.position, cellSize));
         }
+        #endif
     }
 }
