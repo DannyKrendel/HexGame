@@ -1,4 +1,5 @@
-﻿using HexGame.Input;
+﻿using System.Collections.Generic;
+using HexGame.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,16 +13,19 @@ namespace HexGame.Gameplay.StateMachine
         private readonly GameCamera _gameCamera;
         private readonly GameInput _gameInput;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
+        private readonly GridHighlighter _gridHighlighter;
 
         private Player _player;
+        private List<HexCell> _cellsForMove;
         
         public GameStateGameplay(GameStateMachine gameStateMachine, HexGrid hexGrid, GameCamera gameCamera, 
-            GameInput gameInput, ISpawnPoint<Player> playerSpawnPoint) : base(gameStateMachine)
+            GameInput gameInput, ISpawnPoint<Player> playerSpawnPoint, GridHighlighter gridHighlighter) : base(gameStateMachine)
         {
             _hexGrid = hexGrid;
             _gameCamera = gameCamera;
             _gameInput = gameInput;
             _playerSpawnPoint = playerSpawnPoint;
+            _gridHighlighter = gridHighlighter;
         }
 
         public override void Enter()
@@ -49,28 +53,19 @@ namespace HexGame.Gameplay.StateMachine
             
             var mousePos = _gameInput.UI.Point.ReadValue<Vector2>();
             var worldMousePos = _gameCamera.Camera.ScreenToWorldPoint(mousePos);
-            if (_hexGrid.TryGetCell(worldMousePos, out var clickedCell))
+            if (_hexGrid.TryGetCell(worldMousePos, out var clickedCell) && _cellsForMove.Contains(clickedCell))
                 _player.Movement.Move(clickedCell.Coordinates);
         }
 
         private void OnPlayerMoved()
         {
-            ClearHighlight();
-            if (_hexGrid.TryGetCell(_player.Movement.Coordinates, out var playerCell))
-                HighlightNeighborCells(playerCell);
+            HighlightNeighborCells();
         }
 
-        private void HighlightNeighborCells(HexCell targetCell)
+        private void HighlightNeighborCells()
         {
-            var neighbors = _hexGrid.GetNeighbors(targetCell.Coordinates);
-            foreach (var cell in neighbors)
-                cell.Highlight();
-        }
-
-        private void ClearHighlight()
-        {
-            foreach (var cell in _hexGrid.Cells)
-                cell.ClearHighlight();
+            _cellsForMove = _hexGrid.GetNeighbors(_player.Movement.Coordinates);
+            _gridHighlighter.Highlight(_cellsForMove);
         }
     }
 }

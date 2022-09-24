@@ -30,6 +30,7 @@ namespace HexGame.Infrastructure
             BindMenuManager();
             BindPlayer();
             BindSpawnPoint();
+            BindGridHighlighter();
         }
 
         private void BindGameCamera()
@@ -101,6 +102,14 @@ namespace HexGame.Infrastructure
             Container
                 .Bind<ISpawnPoint<Player>>()
                 .FromInstance(_playerSpawnPoint)
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindGridHighlighter()
+        {
+            Container
+                .Bind<GridHighlighter>()
                 .AsSingle()
                 .NonLazy();
         }

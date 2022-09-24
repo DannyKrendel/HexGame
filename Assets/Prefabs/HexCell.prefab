@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 0ee4aaa23a9358f4d860c8972cb946d0, type: 3}
   m_Color: {r: 0.069013596, g: 0, b: 1, a: 0.31764707}
   m_FlipX: 0
@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 2192754584800261323}
   - component: {fileID: 2192754584800261324}
   - component: {fileID: 2192754584800261322}
+  - component: {fileID: 4229096489914654668}
   m_Layer: 0
   m_Name: HexCell
   m_TagString: Untagged
@@ -158,7 +159,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: 0ee4aaa23a9358f4d860c8972cb946d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -182,9 +183,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c3fd7303356dd44b3c66d3515b3ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 2192754584800261324}
   _coordinates:
     _x: 0
     _z: 0
   _selectGameObject: {fileID: 727168610871798778}
   _grid: {fileID: 0}
+--- !u!114 &4229096489914654668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2192754584800261326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8830755b2e67469aba9c02990d940fe7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 2282822876619576187}
+  _duration: 1
+  _ease: 4

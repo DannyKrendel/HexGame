@@ -10,7 +10,6 @@ namespace HexGame.Gameplay
     public class HexCell : MonoBehaviour, IHighlight
     {
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private GameObject _selectGameObject;
         [SerializeField, HideInInspector] private Grid _grid;
 
