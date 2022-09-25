@@ -42,7 +42,7 @@ namespace HexGame.Gameplay
 
         public void Move(HexCoordinates coordinates, bool immediate = false)
         {
-            if (_destinationPosition.HasValue || _destinationCoordinates.HasValue || Coordinates == coordinates) 
+            if (IsMoving || _destinationPosition.HasValue || _destinationCoordinates.HasValue || Coordinates == coordinates) 
                 return;
             
             if (_hexGrid.TryGetWorldPosition(coordinates, out var destination))

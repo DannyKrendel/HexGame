@@ -27,23 +27,17 @@ namespace HexGame.UI.Animation
         private void OnEnable()
         {
             _cell.Broke += Play;
-            _cell.Reset += ResetState;
+            _tween.Rewind();
         }
 
         private void OnDisable()
         {
             _cell.Broke -= Play;
-            _cell.Reset -= ResetState;
         }
 
         private void Play()
         {
             _tween.Restart();
-        }
-        
-        private void ResetState()
-        {
-            _tween.Rewind();
         }
     }
 }

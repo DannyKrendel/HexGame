@@ -13,19 +13,21 @@ namespace HexGame.Gameplay.StateMachine
         private readonly InputManager _inputManager;
         private readonly GridHighlighter _gridHighlighter;
         private readonly GameplayService _gameplayService;
+        private readonly GameSettings _gameSettings;
 
         private Player _player;
         private List<HexCell> _cellsForMove;
         
         public GameStateGameplay(GameStateMachine gameStateMachine, HexGrid hexGrid, GameCamera gameCamera, 
-            InputManager inputManager, GridHighlighter gridHighlighter, GameplayService gameplayService) 
-            : base(gameStateMachine)
+            InputManager inputManager, GridHighlighter gridHighlighter, GameplayService gameplayService, 
+            GameSettings gameSettings) : base(gameStateMachine)
         {
             _hexGrid = hexGrid;
             _gameCamera = gameCamera;
             _inputManager = inputManager;
             _gridHighlighter = gridHighlighter;
             _gameplayService = gameplayService;
+            _gameSettings = gameSettings;
         }
 
         public override void Enter()
@@ -37,7 +39,7 @@ namespace HexGame.Gameplay.StateMachine
             _player = _gameplayService.Player;
             _player.Movement.Moved += OnPlayerMoved;
             
-            _gameCamera.FitCameraToBounds(_hexGrid.Bounds);
+            _gameCamera.FitCameraToBounds(_hexGrid.Bounds, _gameSettings.CameraPadding);
 
             OnPlayerMoved();
         }
@@ -73,7 +75,7 @@ namespace HexGame.Gameplay.StateMachine
 
         private bool CanPlayerMoveToCell(HexCell cell)
         {
-            return !_player.Movement.IsMoving && _cellsForMove.Contains(cell);
+            return _cellsForMove.Contains(cell);
         }
 
         private void UpdateCellsForMove()

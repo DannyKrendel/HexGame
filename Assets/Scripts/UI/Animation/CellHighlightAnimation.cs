@@ -28,25 +28,17 @@ namespace HexGame.UI.Animation
         private void OnEnable()
         {
             _cell.Highlighted += Play;
-            _cell.Reset += ResetState;
-            _cell.HighlightCleared += ResetState;
+            _tween.Rewind();
         }
 
         private void OnDisable()
         {
             _cell.Highlighted -= Play;
-            _cell.Reset -= ResetState;
-            _cell.HighlightCleared -= ResetState;
         }
 
         private void Play()
         {
             _tween.Restart();
-        }
-
-        private void ResetState()
-        {
-            _tween.Rewind();
         }
     }
 }

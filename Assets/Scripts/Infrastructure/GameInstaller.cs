@@ -13,12 +13,12 @@ namespace HexGame.Infrastructure
         [SerializeField] private MenuManager _menuManager;
         [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
 
-        private GameSettings _gameSettings;
+        private GameInstallerSettings _gameInstallerSettings;
 
         [Inject]
-        private void Construct(GameSettings gameSettings)
+        private void Construct(GameInstallerSettings gameInstallerSettings)
         {
-            _gameSettings = gameSettings;
+            _gameInstallerSettings = gameInstallerSettings;
         }
         
         public override void InstallBindings()
@@ -40,7 +40,7 @@ namespace HexGame.Infrastructure
         {
             Container
                 .Bind<GameCamera>()
-                .FromComponentInNewPrefab(_gameSettings.GameCameraPrefab)
+                .FromComponentInNewPrefab(_gameInstallerSettings.GameCameraPrefab)
                 .AsSingle()
                 .NonLazy();
         }
@@ -99,7 +99,7 @@ namespace HexGame.Infrastructure
         {
             Container
                 .BindIFactory<Player>()
-                .FromComponentInNewPrefab(_gameSettings.PlayerPrefab)
+                .FromComponentInNewPrefab(_gameInstallerSettings.PlayerPrefab)
                 .AsSingle()
                 .NonLazy();
         }

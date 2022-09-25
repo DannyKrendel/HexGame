@@ -12,7 +12,7 @@ namespace HexGame
             Camera = GetComponent<Camera>();
         }
 
-        public void FitCameraToBounds(Bounds bounds)
+        public void FitCameraToBounds(Bounds bounds, float padding)
         {
             transform.position = bounds.center - transform.forward;
 
@@ -21,12 +21,12 @@ namespace HexGame
  
             if (screenRatio >= targetRatio)
             {
-                Camera.orthographicSize = bounds.size.y / 2;
+                Camera.orthographicSize = bounds.size.y / 2 + padding;
             }
             else
             {
                 var differenceInSize = targetRatio / screenRatio;
-                Camera.orthographicSize = bounds.size.y / 2 * differenceInSize;
+                Camera.orthographicSize = bounds.size.y / 2 * differenceInSize + padding;
             }
         }
     }
