@@ -1889,7 +1889,9 @@ GameObject:
   - component: {fileID: 1104406555}
   - component: {fileID: 1104406558}
   - component: {fileID: 1104406557}
+  - component: {fileID: 1104406560}
   - component: {fileID: 1104406556}
+  - component: {fileID: 1104406559}
   m_Layer: 5
   m_Name: WinView
   m_TagString: Untagged
@@ -1934,6 +1936,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _restartButton: {fileID: 1634308471}
   _mainMenuButton: {fileID: 1955548781}
+  _fadeAnimation: {fileID: 1104406559}
 --- !u!114 &1104406557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1972,6 +1975,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1104406554}
   m_CullTransparentMesh: 1
+--- !u!114 &1104406559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104406554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da7541d982e4cf2978554e70bf1bbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1104406560}
+  _fadeInDuration: 0.3
+  _fadeInEase: 2
+  _fadeOutDuration: 0.3
+  _fadeOutEase: 3
+--- !u!225 &1104406560
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104406554}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1199607319
 PrefabInstance:
   m_ObjectHideFlags: 0

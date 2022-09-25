@@ -20,8 +20,7 @@ namespace HexGame.UI.Animation
                 .DOScale(0, _duration)
                 .SetEase(_ease)
                 .OnComplete(() => _cell.gameObject.SetActive(false))
-                .Pause()
-                .SetAutoKill(false);
+                .Pause();
         }
 
         private void OnEnable()

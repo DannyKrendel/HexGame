@@ -1,4 +1,5 @@
-﻿using HexGame.Gameplay;
+﻿using Cysharp.Threading.Tasks;
+using HexGame.Gameplay;
 using HexGame.Gameplay.StateMachine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,7 +44,7 @@ namespace HexGame.UI
         private void OnStateChanged()
         {
             if (_gameStateMachine.CurrentState == GameStateType.Win)
-                _winView.gameObject.SetActive(true);
+                _winView.Show().Forget();
         }
 
         private void OnPauseButtonPressed()

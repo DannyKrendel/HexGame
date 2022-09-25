@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1441780469335587321}
   - component: {fileID: 2282822876619576187}
   m_Layer: 0
-  m_Name: SelectedState
+  m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,8 +136,7 @@ MonoBehaviour:
     _x: 0
     _z: 0
   _startDurability: 1
-  _normalState: {fileID: 3579363814090416250}
-  _selectedState: {fileID: 727168610871798778}
+  _highlightObject: {fileID: 727168610871798778}
   _grid: {fileID: 0}
 --- !u!114 &4229096489914654668
 MonoBehaviour:
@@ -182,7 +181,7 @@ GameObject:
   - component: {fileID: 4781099387402392521}
   - component: {fileID: 8045714886306123376}
   m_Layer: 0
-  m_Name: NormalState
+  m_Name: Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

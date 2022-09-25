@@ -12,8 +12,7 @@ namespace HexGame.Gameplay
     {
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
         [SerializeField, Range(0, 10)] private int _startDurability = 1;
-        [SerializeField] private GameObject _normalState;
-        [SerializeField] private GameObject _selectedState;
+        [SerializeField] private GameObject _highlightObject;
         [SerializeField, HideInInspector] private Grid _grid;
 
         public event Action Highlighted;
@@ -58,7 +57,7 @@ namespace HexGame.Gameplay
         public void Highlight()
         {
             if (IsHighlighted) return;
-            _selectedState.SetActive(true);
+            _highlightObject.SetActive(true);
             IsHighlighted = true;
             Highlighted?.Invoke();
         }
@@ -66,7 +65,7 @@ namespace HexGame.Gameplay
         public void ClearHighlight()
         {
             if (!IsHighlighted) return;
-            _selectedState.SetActive(false);
+            _highlightObject.SetActive(false);
             IsHighlighted = false;
             HighlightCleared?.Invoke();
         }

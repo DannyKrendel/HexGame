@@ -21,8 +21,7 @@ namespace HexGame.UI.Animation
                 .From(0)
                 .SetEase(_ease)
                 .SetLoops(-1, LoopType.Yoyo)
-                .Pause()
-                .SetAutoKill(false);
+                .Pause();
         }
 
         private void OnEnable()
