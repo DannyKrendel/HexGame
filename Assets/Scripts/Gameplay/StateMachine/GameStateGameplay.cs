@@ -8,25 +8,30 @@ namespace HexGame.Gameplay.StateMachine
     {
         public override GameStateType Type => GameStateType.Gameplay;
 
-        private readonly HexGrid _hexGrid;
+        private readonly PlatformManager _platformManager;
+        private readonly FishManager _fishManager;
         private readonly GameCamera _gameCamera;
         private readonly InputManager _inputManager;
-        private readonly GridHighlighter _gridHighlighter;
+        private readonly PlatformHighlighter _platformHighlighter;
         private readonly GameplayService _gameplayService;
+        private readonly GridService _gridService;
         private readonly GameSettings _gameSettings;
 
         private Player _player;
-        private List<HexCell> _cellsForMove;
-        
-        public GameStateGameplay(GameStateMachine gameStateMachine, HexGrid hexGrid, GameCamera gameCamera, 
-            InputManager inputManager, GridHighlighter gridHighlighter, GameplayService gameplayService, 
+        private List<Platform> _platformsForMove;
+
+        public GameStateGameplay(GameStateMachine gameStateMachine, PlatformManager platformManager,
+            FishManager fishManager, GameCamera gameCamera, InputManager inputManager, 
+            PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService, 
             GameSettings gameSettings) : base(gameStateMachine)
         {
-            _hexGrid = hexGrid;
+            _platformManager = platformManager;
+            _fishManager = fishManager;
             _gameCamera = gameCamera;
             _inputManager = inputManager;
-            _gridHighlighter = gridHighlighter;
+            _platformHighlighter = platformHighlighter;
             _gameplayService = gameplayService;
+            _gridService = gridService;
             _gameSettings = gameSettings;
         }
 
@@ -39,7 +44,7 @@ namespace HexGame.Gameplay.StateMachine
             _player = _gameplayService.Player;
             _player.Movement.Moved += OnPlayerMoved;
             
-            _gameCamera.FitCameraToBounds(_hexGrid.Bounds, _gameSettings.CameraPadding);
+            _gameCamera.FitCameraToBounds(_gameplayService.GetLevelBounds(), _gameSettings.CameraPadding);
 
             OnPlayerMoved();
         }
@@ -59,33 +64,35 @@ namespace HexGame.Gameplay.StateMachine
         private void OnClick(Vector2 pointerPosition)
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
-            if (_hexGrid.TryGetCell(worldPos, out var clickedCell) && CanPlayerMoveToCell(clickedCell))
+            var coordinates = _gridService.WorldToCoordinates(worldPos);
+            if (_platformManager.TryGetElement(coordinates, out var clickedPlatform) && 
+                _platformManager.TryGetElement(_player.Movement.Coordinates, out var playerPlatform) && 
+                CanPlayerMoveToPlatform(clickedPlatform))
             {
-                _hexGrid.TryGetCell(_player.Movement.Coordinates, out var playerCell);
-                _player.Movement.Move(clickedCell.Coordinates);
-                playerCell.SubtractDurability();
+                playerPlatform.SubtractDurability();
+                _player.Movement.Move(clickedPlatform.Coordinates);
             }
         }
 
         private void OnPlayerMoved()
         {
-            UpdateCellsForMove();
-            _gridHighlighter.Highlight(_cellsForMove);
+            UpdatePlatformsForMove();
+            _platformHighlighter.Highlight(_platformsForMove);
         }
 
-        private bool CanPlayerMoveToCell(HexCell cell)
+        private bool CanPlayerMoveToPlatform(Platform platform)
         {
-            return _cellsForMove.Contains(cell);
+            return _platformsForMove.Contains(platform);
         }
 
-        private void UpdateCellsForMove()
+        private void UpdatePlatformsForMove()
         {
-            _cellsForMove = new List<HexCell>();
-            var neighbors = _hexGrid.GetNeighbors(_player.Movement.Coordinates);
-            foreach (var cell in neighbors)
+            _platformsForMove = new List<Platform>();
+            var neighbors = _platformManager.GetNeighbors(_player.Movement.Coordinates);
+            foreach (var platform in neighbors)
             {
-                if (cell.Durability > 0)
-                    _cellsForMove.Add(cell);
+                if (platform.Durability > 0)
+                    _platformsForMove.Add(platform);
             }
         }
     }

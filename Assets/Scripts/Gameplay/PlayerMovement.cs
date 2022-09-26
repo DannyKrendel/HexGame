@@ -4,7 +4,7 @@ using Zenject;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerMovement : MonoBehaviour, IHexGridActor
+    public class PlayerMovement : MonoBehaviour, IHexGridElement
     {
         [SerializeField] private float _moveDuration = .5f;
         
@@ -12,16 +12,16 @@ namespace HexGame.Gameplay
         public bool IsMoving { get; private set; }
         public event Action Moved;
         
-        private HexGrid _hexGrid;
+        private GridService _gridService;
         private Vector3 _startPosition;
         private Vector3? _destinationPosition;
         private HexCoordinates? _destinationCoordinates;
         private float _moveTimer;
 
         [Inject]
-        private void Construct(HexGrid hexGrid)
+        private void Construct(GridService gridService)
         {
-            _hexGrid = hexGrid;
+            _gridService = gridService;
         }
 
         private void Update()
@@ -44,13 +44,12 @@ namespace HexGame.Gameplay
         {
             if (IsMoving || _destinationPosition.HasValue || _destinationCoordinates.HasValue || Coordinates == coordinates) 
                 return;
-            
-            if (_hexGrid.TryGetWorldPosition(coordinates, out var destination))
-            {
-                StartMoving(destination, coordinates);
-                if (immediate)
-                    StopMoving();
-            }
+
+            var destination = _gridService.CoordinatesToWorld(coordinates);
+
+            StartMoving(destination, coordinates);
+            if (immediate)
+                StopMoving();
         }
 
         private void StartMoving(Vector3 destinationPosition, HexCoordinates destinationCoordinates)

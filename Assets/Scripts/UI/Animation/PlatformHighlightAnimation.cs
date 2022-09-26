@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace HexGame.UI.Animation
 {
-    public class CellHighlightAnimation : MonoBehaviour
+    public class PlatformHighlightAnimation : MonoBehaviour
     {
-        [SerializeField] private HexCell _cell;
+        [SerializeField] private Platform _platform;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private Ease _ease = Ease.InOutSine;
@@ -26,13 +26,13 @@ namespace HexGame.UI.Animation
 
         private void OnEnable()
         {
-            _cell.Highlighted += Play;
+            _platform.Highlighted += Play;
             _tween.Rewind();
         }
 
         private void OnDisable()
         {
-            _cell.Highlighted -= Play;
+            _platform.Highlighted -= Play;
         }
 
         private void Play()

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace HexGame.UI.Animation
 {
-    public class CellBreakAnimation : MonoBehaviour
+    public class PlatformBreakAnimation : MonoBehaviour
     {
-        [SerializeField] private HexCell _cell;
+        [SerializeField] private Platform _platform;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private Ease _ease = Ease.InOutSine;
@@ -19,19 +19,19 @@ namespace HexGame.UI.Animation
             _tween = _spriteRenderer.transform
                 .DOScale(0, _duration)
                 .SetEase(_ease)
-                .OnComplete(() => _cell.gameObject.SetActive(false))
+                .OnComplete(() => _platform.gameObject.SetActive(false))
                 .Pause();
         }
 
         private void OnEnable()
         {
-            _cell.Broke += Play;
+            _platform.Broke += Play;
             _tween.Rewind();
         }
 
         private void OnDisable()
         {
-            _cell.Broke -= Play;
+            _platform.Broke -= Play;
         }
 
         private void Play()

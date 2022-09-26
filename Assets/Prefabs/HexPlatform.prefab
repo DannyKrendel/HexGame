@@ -70,9 +70,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingLayerID: 196516183
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 0ee4aaa23a9358f4d860c8972cb946d0, type: 3}
   m_Color: {r: 0.069013596, g: 0, b: 1, a: 0.31764707}
   m_FlipX: 0
@@ -93,11 +93,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2192754584800261323}
-  - component: {fileID: 2192754584800261322}
+  - component: {fileID: 3791448234097217395}
   - component: {fileID: 4229096489914654668}
   - component: {fileID: 6084006995187063552}
   m_Layer: 0
-  m_Name: HexCell
+  m_Name: HexPlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -120,7 +120,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2192754584800261322
+--- !u!114 &3791448234097217395
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,15 +129,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2192754584800261326}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79c3fd7303356dd44b3c66d3515b3ec5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5e843bbc20fc4d269508a0b4b96522f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _coordinates:
     _x: 0
     _z: 0
+  _grid: {fileID: 0}
   _startDurability: 1
   _highlightObject: {fileID: 727168610871798778}
-  _grid: {fileID: 0}
 --- !u!114 &4229096489914654668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8830755b2e67469aba9c02990d940fe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cell: {fileID: 2192754584800261322}
+  _platform: {fileID: 3791448234097217395}
   _spriteRenderer: {fileID: 2282822876619576187}
   _duration: 0.5
   _ease: 4
@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3498c271457a49a8aa9b8ada7772bfcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cell: {fileID: 2192754584800261322}
+  _platform: {fileID: 3791448234097217395}
   _spriteRenderer: {fileID: 8045714886306123376}
   _duration: 0.5
   _ease: 4
@@ -240,9 +240,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingLayerID: 196516183
+  m_SortingLayer: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0ee4aaa23a9358f4d860c8972cb946d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

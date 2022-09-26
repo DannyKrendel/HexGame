@@ -1,21 +1,26 @@
-﻿using System.Linq;
+﻿using UnityEngine;
 using Zenject;
 
 namespace HexGame.Gameplay
 {
     public class GameplayService
     {
-        private readonly HexGrid _hexGrid;
+        private readonly PlatformManager _platformManager;
+        private readonly FishManager _fishManager;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly IFactory<Player> _playerFactory;
+        private readonly GridService _gridService;
 
         public Player Player { get; private set; }
-        
-        public GameplayService(HexGrid hexGrid, ISpawnPoint<Player> playerSpawnPoint, IFactory<Player> playerFactory)
+
+        public GameplayService(PlatformManager platformManager, FishManager fishManager, 
+            ISpawnPoint<Player> playerSpawnPoint, IFactory<Player> playerFactory, GridService gridService)
         {
-            _hexGrid = hexGrid;
+            _platformManager = platformManager;
+            _fishManager = fishManager;
             _playerSpawnPoint = playerSpawnPoint;
             _playerFactory = playerFactory;
+            _gridService = gridService;
         }
 
         public void SpawnPlayer()
@@ -28,21 +33,32 @@ namespace HexGame.Gameplay
 
         public void RestartLevel()
         {
-            foreach (var cell in _hexGrid.Cells)
-                cell.ResetState();
+            foreach (var platform in _platformManager.Elements)
+                platform.ResetState();
             
             _playerSpawnPoint.Spawn(Player);
         }
 
         public bool IsWin()
         {
-            var activeCellCount = 0;
-            foreach (var cell in _hexGrid.Cells)
+            var activePlatformsCount = 0;
+            foreach (var platform in _platformManager.Elements)
             {
-                if (cell.gameObject.activeSelf)
-                    activeCellCount++;
+                if (platform.gameObject.activeSelf)
+                    activePlatformsCount++;
             }
-            return activeCellCount == 1;
+            return activePlatformsCount == 1;
+        }
+        
+        public Bounds GetLevelBounds()
+        {
+            var cellSize = _gridService.CellSize;
+            var bounds = new Bounds();
+
+            foreach (var platform in _platformManager.Elements)
+                bounds.Encapsulate(new Bounds(platform.transform.position, cellSize));
+
+            return bounds;
         }
     }
 }

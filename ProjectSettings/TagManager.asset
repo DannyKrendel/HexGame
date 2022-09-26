@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Platforms
+    uniqueID: 196516183
+    locked: 0
+  - name: Fishes
+    uniqueID: 1108150437
+    locked: 0
+  - name: Player
+    uniqueID: 717127259
+    locked: 0

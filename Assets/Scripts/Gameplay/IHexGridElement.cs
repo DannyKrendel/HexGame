@@ -1,6 +1,6 @@
 ﻿namespace HexGame.Gameplay
 {
-    public interface IHexGridActor
+    public interface IHexGridElement
     {
         HexCoordinates Coordinates { get; }
     }

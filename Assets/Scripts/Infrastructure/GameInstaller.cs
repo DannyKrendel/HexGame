@@ -9,9 +9,11 @@ namespace HexGame.Infrastructure
 {
     public class GameInstaller : MonoInstaller
     {
-        [SerializeField] private HexGrid _hexGrid;
+        [SerializeField] private Grid _gameGrid;
         [SerializeField] private MenuManager _menuManager;
         [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
+        [SerializeField] private PlatformManager _platformManager;
+        [SerializeField] private FishManager _fishManager;
 
         private GameInstallerSettings _gameInstallerSettings;
 
@@ -24,7 +26,8 @@ namespace HexGame.Infrastructure
         public override void InstallBindings()
         {
             BindGameCamera();
-            BindHexGrid();
+            BindGameGrid();
+            BindGridService();
             BindGameStateManager();
             BindGameStates();
             BindMenus();
@@ -34,6 +37,7 @@ namespace HexGame.Infrastructure
             BindGridHighlighter();
             BindInputManager();
             BindGameplayService();
+            BindGridElementManagers();
         }
 
         private void BindGameCamera()
@@ -45,10 +49,18 @@ namespace HexGame.Infrastructure
                 .NonLazy();
         }
 
-        private void BindHexGrid()
+        private void BindGameGrid()
         {
             Container
-                .BindInstance(_hexGrid)
+                .BindInstance(_gameGrid)
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindGridService()
+        {
+            Container
+                .Bind<GridService>()
                 .AsSingle()
                 .NonLazy();
         }
@@ -116,7 +128,7 @@ namespace HexGame.Infrastructure
         private void BindGridHighlighter()
         {
             Container
-                .Bind<GridHighlighter>()
+                .Bind<PlatformHighlighter>()
                 .AsSingle()
                 .NonLazy();
         }
@@ -133,6 +145,21 @@ namespace HexGame.Infrastructure
         {
             Container
                 .Bind<GameplayService>()
+                .AsSingle()
+                .NonLazy();
+        }
+        
+        private void BindGridElementManagers()
+        {
+            Container
+                .Bind<PlatformManager>()
+                .FromInstance(_platformManager)
+                .AsSingle()
+                .NonLazy();
+            
+            Container
+                .Bind<FishManager>()
+                .FromInstance(_fishManager)
                 .AsSingle()
                 .NonLazy();
         }

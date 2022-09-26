@@ -19,8 +19,8 @@ namespace HexGame
             _z = z;
         }
 
-        public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - z / 2, z);
-        public static Vector3Int ToOffsetCoordinates(int x, int z) => new(x + z / 2, z);
+        public static HexCoordinates FromOffsetCoordinates(int x, int z) => new(x - (z - (z & 1)) / 2, z);
+        public Vector3Int ToOffsetCoordinates() => new(X + (Z - (Z & 1)) / 2, Z);
         
         public override string ToString() => $"({X}, {Y}, {Z})";
         public string ToStringOnSeparateLines() => $"{X}\n{Y}\n{Z}";
