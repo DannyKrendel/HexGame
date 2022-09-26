@@ -13,12 +13,12 @@ namespace HexGame.UI
 
         public override MenuType Type => MenuType.LevelMenu;
         
-        private LevelLoader _levelLoader;
+        private LevelManager _levelManager;
 
         [Inject]
-        private void Construct(LevelLoader levelLoader)
+        private void Construct(LevelManager levelManager)
         {
-            _levelLoader = levelLoader;
+            _levelManager = levelManager;
         }
         
         private void Awake()
@@ -40,7 +40,7 @@ namespace HexGame.UI
 
         private void OnLevelButtonPressed(int number)
         {
-            _levelLoader.LoadLevel(number);
+            _levelManager.LoadLevel(number);
         }
     }
 }

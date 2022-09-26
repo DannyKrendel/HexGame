@@ -45,7 +45,7 @@ namespace HexGame.Gameplay
                 Break().Forget();
         }
 
-        private async UniTaskVoid Break()
+        private async UniTask Break()
         {
             ClearHighlight();
             if (Broke != null) 

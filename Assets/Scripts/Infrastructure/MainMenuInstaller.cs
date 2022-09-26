@@ -7,14 +7,12 @@ namespace HexGame.Infrastructure
 {
     public class MainMenuInstaller : MonoInstaller
     {
-        [SerializeField] private MenuManager _menuManager;
-        [SerializeField] private LevelLoader _levelLoader;
-        
+        [SerializeField] private MenuType _startMenu;
+
         public override void InstallBindings()
         {
             BindMenus();
             BindMenuManager();
-            BindLevelLoader();
         }
 
         private void BindMenus()
@@ -29,15 +27,12 @@ namespace HexGame.Infrastructure
         private void BindMenuManager()
         {
             Container
-                .BindInstance(_menuManager)
-                .AsSingle()
+                .BindInstance(_startMenu)
+                .WhenInjectedInto<MenuManager>()
                 .NonLazy();
-        }
-        
-        private void BindLevelLoader()
-        {
             Container
-                .BindInstance(_levelLoader)
+                .Bind<MenuManager>()
+                .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
         }

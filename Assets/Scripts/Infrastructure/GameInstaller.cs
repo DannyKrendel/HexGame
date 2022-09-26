@@ -9,9 +9,9 @@ namespace HexGame.Infrastructure
 {
     public class GameInstaller : MonoInstaller
     {
+        [SerializeField] private MenuType _startMenu;
         [SerializeField] private GameStateType _startState;
         [SerializeField] private Grid _gameGrid;
-        [SerializeField] private MenuManager _menuManager;
         [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
         [SerializeField] private PlatformManager _platformManager;
         [SerializeField] private FishManager _fishManager;
@@ -112,7 +112,12 @@ namespace HexGame.Infrastructure
         private void BindMenuManager()
         {
             Container
-                .BindInstance(_menuManager)
+                .BindInstance(_startMenu)
+                .WhenInjectedInto<MenuManager>()
+                .NonLazy();
+            Container
+                .Bind<MenuManager>()
+                .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
         }

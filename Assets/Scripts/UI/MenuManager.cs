@@ -6,16 +6,16 @@ namespace HexGame.UI
 {
     public class MenuManager : MonoBehaviour
     {
-        [SerializeField] private MenuType _startMenu;
-
+        private MenuType _startMenu;
         private Canvas _rootCanvas;
         private Dictionary<MenuType, MenuBase> _menuDictionary;
         private Stack<MenuBase> _menuStack;
         private MenuBase _currentMenu;
 
         [Inject]
-        private void Construct(MenuBase[] menus)
+        private void Construct(MenuType startMenu, MenuBase[] menus)
         {
+            _startMenu = startMenu;
             RegisterMenus(menus);
         }
         
