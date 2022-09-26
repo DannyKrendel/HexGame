@@ -9,6 +9,7 @@ namespace HexGame.Infrastructure
 {
     public class GameInstaller : MonoInstaller
     {
+        [SerializeField] private GameStateType _startState;
         [SerializeField] private Grid _gameGrid;
         [SerializeField] private MenuManager _menuManager;
         [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
@@ -28,7 +29,7 @@ namespace HexGame.Infrastructure
             BindGameCamera();
             BindGameGrid();
             BindGridService();
-            BindGameStateManager();
+            BindGameStateMachine();
             BindGameStates();
             BindMenus();
             BindMenuManager();
@@ -65,7 +66,7 @@ namespace HexGame.Infrastructure
                 .NonLazy();
         }
         
-        private void BindGameStateManager()
+        private void BindGameStateMachine()
         {
             Container
                 .Bind<GameStateMachine>()
@@ -76,6 +77,15 @@ namespace HexGame.Infrastructure
         
         private void BindGameStates()
         {
+            Container
+                .BindInstance(_startState)
+                .WhenInjectedInto<GameStateMachine>()
+                .NonLazy();
+            
+            Container
+                .Bind<GameStateBase>().To<GameStateStartLevel>()
+                .AsSingle()
+                .NonLazy();
             Container
                 .Bind<GameStateBase>().To<GameStateGameplay>()
                 .AsSingle()

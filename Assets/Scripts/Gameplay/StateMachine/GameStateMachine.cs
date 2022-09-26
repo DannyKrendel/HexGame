@@ -12,13 +12,16 @@ namespace HexGame.Gameplay.StateMachine
         private GameStateBase _previousState;
         private Dictionary<GameStateType, GameStateBase> _states;
 
+        private GameStateType _startState;
+
         public GameStateType CurrentState { get; private set; }
         public event Action StateChanged;
 
         [Inject]
-        private void Construct(List<GameStateBase> states)
+        private void Construct(List<GameStateBase> states, GameStateType startState)
         {
             _states = states.ToDictionary(state => state.Type);
+            _startState = startState;
         }
         
         private void Start()
@@ -28,7 +31,7 @@ namespace HexGame.Gameplay.StateMachine
         
         public void Initialize()
         {
-            ChangeState(GameStateType.Gameplay);
+            ChangeState(_startState);
         }
 
         private void Update()
@@ -73,6 +76,6 @@ namespace HexGame.Gameplay.StateMachine
 
     public enum GameStateType
     {
-        Gameplay, Pause, Win
+        StartLevel, Gameplay, Pause, Win
     }
 }

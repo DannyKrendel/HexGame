@@ -15,15 +15,14 @@ namespace HexGame.Gameplay.StateMachine
         private readonly PlatformHighlighter _platformHighlighter;
         private readonly GameplayService _gameplayService;
         private readonly GridService _gridService;
-        private readonly GameSettings _gameSettings;
 
         private Player _player;
         private List<Platform> _platformsForMove;
 
         public GameStateGameplay(GameStateMachine gameStateMachine, PlatformManager platformManager,
             FishManager fishManager, GameCamera gameCamera, InputManager inputManager, 
-            PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService, 
-            GameSettings gameSettings) : base(gameStateMachine)
+            PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService) 
+            : base(gameStateMachine)
         {
             _platformManager = platformManager;
             _fishManager = fishManager;
@@ -32,19 +31,14 @@ namespace HexGame.Gameplay.StateMachine
             _platformHighlighter = platformHighlighter;
             _gameplayService = gameplayService;
             _gridService = gridService;
-            _gameSettings = gameSettings;
         }
 
         public override void Enter()
         {
-            _inputManager.Enable();
             _inputManager.Click += OnClick;
-
-            _gameplayService.SpawnPlayer();
+            
             _player = _gameplayService.Player;
             _player.Movement.Moved += OnPlayerMoved;
-            
-            _gameCamera.FitCameraToBounds(_gameplayService.GetLevelBounds(), _gameSettings.CameraPadding);
 
             OnPlayerMoved();
         }
@@ -82,7 +76,7 @@ namespace HexGame.Gameplay.StateMachine
 
         private bool CanPlayerMoveToPlatform(Platform platform)
         {
-            return _platformsForMove.Contains(platform);
+            return !_player.Movement.IsMoving && _platformsForMove.Contains(platform);
         }
 
         private void UpdatePlatformsForMove()
