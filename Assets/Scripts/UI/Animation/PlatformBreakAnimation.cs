@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using HexGame.Gameplay;
 using UnityEngine;
@@ -19,7 +20,6 @@ namespace HexGame.UI.Animation
             _tween = _spriteRenderer.transform
                 .DOScale(0, _duration)
                 .SetEase(_ease)
-                .OnComplete(() => _platform.gameObject.SetActive(false))
                 .Pause();
         }
 
@@ -34,9 +34,10 @@ namespace HexGame.UI.Animation
             _platform.Broke -= Play;
         }
 
-        private void Play()
+        private async UniTask Play()
         {
             _tween.Restart();
+            await _tween.AsyncWaitForCompletion();
         }
     }
 }

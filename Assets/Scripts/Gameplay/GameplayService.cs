@@ -35,7 +35,9 @@ namespace HexGame.Gameplay
         {
             foreach (var platform in _platformManager.Elements)
                 platform.ResetState();
-            
+            foreach (var fish in _fishManager.Elements)
+                fish.ResetState();
+
             _playerSpawnPoint.Spawn(Player);
         }
 

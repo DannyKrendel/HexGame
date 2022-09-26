@@ -2,6 +2,6 @@
 {
     public interface IHexGridElement
     {
-        HexCoordinates Coordinates { get; }
+        HexCoordinates Coordinates { get; set; }
     }
 }

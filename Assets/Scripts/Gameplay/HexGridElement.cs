@@ -12,7 +12,7 @@ namespace HexGame.Gameplay
         [SerializeField, ReadOnly] private HexCoordinates _coordinates;
         [SerializeField, HideInInspector] private Grid _grid;
 
-        public HexCoordinates Coordinates => _coordinates;
+        public HexCoordinates Coordinates { get => _coordinates; set => _coordinates = value; }
 
         private const float HexRatio = 0.866025404f;
 

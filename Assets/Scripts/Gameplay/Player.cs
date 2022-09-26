@@ -2,10 +2,11 @@
 
 namespace HexGame.Gameplay
 {
-    public class Player : MonoBehaviour
+    public class Player : MonoBehaviour, IHexGridElement
     {
-        [SerializeField] private PlayerMovement _movement;
+        [SerializeField] private HexGridElementMovement _movement;
 
-        public PlayerMovement Movement => _movement;
+        public HexGridElementMovement Movement => _movement;
+        public HexCoordinates Coordinates { get; set; }
     }
 }

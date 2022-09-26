@@ -4,14 +4,15 @@ using Zenject;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerMovement : MonoBehaviour, IHexGridElement
+    [RequireComponent(typeof(IHexGridElement))]
+    public class HexGridElementMovement : MonoBehaviour
     {
         [SerializeField] private float _moveDuration = .5f;
         
-        public HexCoordinates Coordinates { get; private set; }
         public bool IsMoving { get; private set; }
         public event Action Moved;
-        
+
+        private IHexGridElement _hexGridElement;
         private GridService _gridService;
         private Vector3 _startPosition;
         private Vector3? _destinationPosition;
@@ -22,6 +23,11 @@ namespace HexGame.Gameplay
         private void Construct(GridService gridService)
         {
             _gridService = gridService;
+        }
+
+        private void Awake()
+        {
+            _hexGridElement = GetComponent<IHexGridElement>();
         }
 
         private void Update()
@@ -42,7 +48,7 @@ namespace HexGame.Gameplay
 
         public void Move(HexCoordinates coordinates, bool immediate = false)
         {
-            if (IsMoving || _destinationPosition.HasValue || _destinationCoordinates.HasValue || Coordinates == coordinates) 
+            if (IsMoving || _destinationPosition.HasValue || _destinationCoordinates.HasValue || _hexGridElement.Coordinates == coordinates) 
                 return;
 
             var destination = _gridService.CoordinatesToWorld(coordinates);
@@ -63,7 +69,7 @@ namespace HexGame.Gameplay
 
         private void StopMoving()
         {
-            Coordinates = _destinationCoordinates.GetValueOrDefault();
+            _hexGridElement.Coordinates = _destinationCoordinates.GetValueOrDefault();
             transform.position = _destinationPosition.GetValueOrDefault();
             _moveTimer = 0;
             _destinationPosition = null;
