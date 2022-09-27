@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using HexGame.Gameplay;
@@ -25,16 +26,16 @@ namespace HexGame.UI.Animation
 
         private void OnEnable()
         {
-            _platform.Broke += Play;
+            _platform.Breaking += Play;
             _tween.Rewind();
         }
 
         private void OnDisable()
         {
-            _platform.Broke -= Play;
+            _platform.Breaking -= Play;
         }
 
-        private async UniTask Play()
+        private async UniTask Play(CancellationToken cancellationToken = default)
         {
             _tween.Restart();
             await _tween.AsyncWaitForCompletion();

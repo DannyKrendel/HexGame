@@ -1,5 +1,6 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
+using HexGame.Utils;
 using UnityEngine;
 
 namespace HexGame.Gameplay
@@ -11,7 +12,8 @@ namespace HexGame.Gameplay
         
         public event Action Highlighted;
         public event Action HighlightCleared;
-        public event Func<UniTask> Broke;
+        public event ActionAsync Breaking;
+        public event Action Broke;
         public event Action Reset;
         
         public bool IsHighlighted { get; private set; }
@@ -42,15 +44,17 @@ namespace HexGame.Gameplay
         {
             Durability = Mathf.Max(Durability - amount, 0);
             if (Durability == 0)
+            {
+                ClearHighlight();
                 Break().Forget();
+            }
         }
 
         private async UniTask Break()
         {
-            ClearHighlight();
-            if (Broke != null) 
-                await Broke();
+            await Breaking.InvokeAsync();
             gameObject.SetActive(false);
+            Broke?.Invoke();
         }
 
         public void ResetState()
