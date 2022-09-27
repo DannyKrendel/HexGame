@@ -8,17 +8,20 @@ namespace HexGame.Gameplay
         private readonly PlatformManager _platformManager;
         private readonly FishManager _fishManager;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
+        private readonly LevelFinish _levelFinish;
         private readonly IFactory<Player> _playerFactory;
         private readonly GridService _gridService;
 
         public Player Player { get; private set; }
 
         public GameplayService(PlatformManager platformManager, FishManager fishManager, 
-            ISpawnPoint<Player> playerSpawnPoint, IFactory<Player> playerFactory, GridService gridService)
+            ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
+            IFactory<Player> playerFactory, GridService gridService)
         {
             _platformManager = platformManager;
             _fishManager = fishManager;
             _playerSpawnPoint = playerSpawnPoint;
+            _levelFinish = levelFinish;
             _playerFactory = playerFactory;
             _gridService = gridService;
         }
@@ -43,13 +46,7 @@ namespace HexGame.Gameplay
 
         public bool IsWin()
         {
-            var activePlatformsCount = 0;
-            foreach (var platform in _platformManager.Elements)
-            {
-                if (platform.gameObject.activeSelf)
-                    activePlatformsCount++;
-            }
-            return activePlatformsCount == 1;
+            return Player.Coordinates == _levelFinish.Coordinates;
         }
         
         public Bounds GetLevelBounds()

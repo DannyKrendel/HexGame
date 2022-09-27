@@ -23,23 +23,32 @@ namespace HexGame.Gameplay
 
             if (_grid == null)
             {
+                SetCoordinates(default);
+                
                 _grid = transform.GetComponentInParent<Grid>();
                 if (_grid == null) return;
                 
                 var gridService = new GridService(_grid);
-                _coordinates = gridService.WorldToCoordinates(transform.position);
-                EditorUtility.SetDirty(this);
-                PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+                SetCoordinates(gridService.WorldToCoordinates(transform.position));
             }
             if (_grid != null)
             {
                 var gridService = new GridService(_grid);
-                transform.position = gridService.CoordinatesToWorld(_coordinates);
+                SetCoordinates(gridService.WorldToCoordinates(transform.position));
+                
                 var scale = gridService.CellSize;
                 scale.x /= HexRatio;
                 transform.localScale = scale;
             }
             #endif
+        }
+
+        private void SetCoordinates(HexCoordinates coordinates)
+        {
+            if (_coordinates == coordinates) return;
+            _coordinates = coordinates;
+            EditorUtility.SetDirty(this);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
         }
     }
 }

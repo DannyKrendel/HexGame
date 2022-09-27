@@ -30,13 +30,17 @@ namespace HexGame.Gameplay
             {
                 if (levelDataList[i].LevelId == levelId)
                 {
-                    levelDataList[i] = new LevelData
+                    var oldLevelData = levelDataList[i];
+                    var newLevelData = new LevelData
                     {
                         LevelId = levelId,
-                        IsCompleted = isCompleted,
-                        CollectedFishCount = collectedFishCount,
+                        IsCompleted = oldLevelData.IsCompleted || isCompleted,
+                        CollectedFishCount = Mathf.Max(oldLevelData.CollectedFishCount, collectedFishCount),
                         AllFishCount = allFishCount
                     };
+                    levelDataList[i] = newLevelData;
+
+                    break;
                 }
             }
         }

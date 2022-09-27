@@ -1,16 +1,12 @@
-﻿using System;
-using UnityEngine;
-using Zenject;
+﻿using UnityEngine;
 
 namespace HexGame.Gameplay
 {
-    public class PlayerSpawnPoint : MonoBehaviour, ISpawnPoint<Player>
+    public class PlayerSpawnPoint : HexGridElement, ISpawnPoint<Player>
     {
-        [SerializeField] private HexCoordinates _coordinates;
-
         public void Spawn(Player player)
         {
-            player.Movement.Move(_coordinates, true);
+            player.Movement.Move(Coordinates, true);
         }
     }
 }
