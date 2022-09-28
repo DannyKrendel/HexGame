@@ -4,16 +4,15 @@ using UnityEngine;
 
 namespace HexGame.Gameplay
 {
-    public abstract class HexGridElementManager<TElement> : MonoBehaviour
-        where TElement : HexGridElement
+    public class HexGridElementManager<TElement> where TElement : HexGridElement
     {
-        protected Dictionary<HexCoordinates, TElement> ElementDictionary;
+        protected readonly Dictionary<HexCoordinates, TElement> ElementDictionary;
 
-        public List<TElement> Elements { get; private set; }
-        
-        protected virtual void Awake()
+        public List<TElement> Elements { get; }
+
+        protected HexGridElementManager(Grid grid)
         {
-            Elements = GetComponentsInChildren<TElement>().ToList();
+            Elements = grid.GetComponentsInChildren<TElement>().ToList();
             ElementDictionary = Elements.ToDictionary(x => x.Coordinates);
         }
 

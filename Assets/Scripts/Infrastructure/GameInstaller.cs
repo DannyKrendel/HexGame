@@ -14,8 +14,6 @@ namespace HexGame.Infrastructure
         [SerializeField] private Grid _gameGrid;
         [SerializeField] private PlayerSpawnPoint _playerSpawnPoint;
         [SerializeField] private LevelFinish _levelFinish;
-        [SerializeField] private PlatformManager _platformManager;
-        [SerializeField] private FishManager _fishManager;
 
         private GameInstallerSettings _gameInstallerSettings;
 
@@ -39,7 +37,7 @@ namespace HexGame.Infrastructure
             BindGridHighlighter();
             BindInputManager();
             BindGameplayService();
-            BindGridElementManagers();
+            BindGridElementManager();
             BindLevelFinish();
         }
 
@@ -166,19 +164,12 @@ namespace HexGame.Infrastructure
                 .NonLazy();
         }
         
-        private void BindGridElementManagers()
+        private void BindGridElementManager()
         {
             Container
-                .Bind<PlatformManager>()
-                .FromInstance(_platformManager)
-                .AsSingle()
-                .NonLazy();
-            
-            Container
-                .Bind<FishManager>()
-                .FromInstance(_fishManager)
-                .AsSingle()
-                .NonLazy();
+                .Bind(typeof(HexGridElementManager<>))
+                .ToSelf()
+                .AsSingle();
         }
         
         private void BindLevelFinish()

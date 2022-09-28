@@ -12,9 +12,14 @@ namespace HexGame.Gameplay
         
         public bool IsConsumed { get; private set; }
 
-        public async UniTask Consume()
+        public void Consume()
         {
             IsConsumed = true;
+            Disable().Forget();
+        }
+
+        public async UniTask Disable()
+        {
             await Consuming.InvokeAsync();
             gameObject.SetActive(false);
             Consumed?.Invoke();

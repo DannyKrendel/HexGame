@@ -7,9 +7,7 @@ namespace HexGame.Gameplay.StateMachine
     public class GameStateGameplay : GameStateBase
     {
         public override GameStateType Type => GameStateType.Gameplay;
-
-        private readonly PlatformManager _platformManager;
-        private readonly FishManager _fishManager;
+        
         private readonly GameCamera _gameCamera;
         private readonly InputManager _inputManager;
         private readonly PlatformHighlighter _platformHighlighter;
@@ -19,13 +17,10 @@ namespace HexGame.Gameplay.StateMachine
         private Player _player;
         private List<Platform> _platformsForMove;
 
-        public GameStateGameplay(GameStateMachine gameStateMachine, PlatformManager platformManager,
-            FishManager fishManager, GameCamera gameCamera, InputManager inputManager, 
+        public GameStateGameplay(GameStateMachine gameStateMachine, GameCamera gameCamera, InputManager inputManager, 
             PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService) 
             : base(gameStateMachine)
         {
-            _platformManager = platformManager;
-            _fishManager = fishManager;
             _gameCamera = gameCamera;
             _inputManager = inputManager;
             _platformHighlighter = platformHighlighter;
@@ -59,8 +54,8 @@ namespace HexGame.Gameplay.StateMachine
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             var coordinates = _gridService.WorldToCoordinates(worldPos);
-            if (_platformManager.TryGetElement(coordinates, out var clickedPlatform) && 
-                _platformManager.TryGetElement(_player.Coordinates, out var playerPlatform) && 
+            if (_gameplayService.PlatformManager.TryGetElement(coordinates, out var clickedPlatform) && 
+                _gameplayService.PlatformManager.TryGetElement(_player.Coordinates, out var playerPlatform) && 
                 CanPlayerMoveToPlatform(clickedPlatform))
             {
                 playerPlatform.SubtractDurability();
@@ -73,7 +68,7 @@ namespace HexGame.Gameplay.StateMachine
             UpdatePlatformsForMove();
             _platformHighlighter.Highlight(_platformsForMove);
 
-            if (_fishManager.TryGetElement(_player.Coordinates, out var fish) &&
+            if (_gameplayService.FishManager.TryGetElement(_player.Coordinates, out var fish) &&
                 fish.Coordinates == _player.Coordinates)
             {
                 fish.Consume();
@@ -88,7 +83,7 @@ namespace HexGame.Gameplay.StateMachine
         private void UpdatePlatformsForMove()
         {
             _platformsForMove = new List<Platform>();
-            var neighbors = _platformManager.GetNeighbors(_player.Coordinates);
+            var neighbors = _gameplayService.GetNeighbors(_player.Coordinates);
             foreach (var platform in neighbors)
             {
                 if (platform.Durability > 0)

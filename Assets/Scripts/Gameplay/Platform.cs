@@ -42,8 +42,9 @@ namespace HexGame.Gameplay
 
         public void SubtractDurability(int amount = 1)
         {
+            var oldDurability = Durability;
             Durability = Mathf.Max(Durability - amount, 0);
-            if (Durability == 0)
+            if (Durability == 0 && oldDurability > 0)
             {
                 ClearHighlight();
                 Break().Forget();

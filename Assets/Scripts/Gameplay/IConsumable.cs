@@ -1,5 +1,4 @@
 ﻿using System;
-using Cysharp.Threading.Tasks;
 
 namespace HexGame.Gameplay
 {
@@ -8,6 +7,6 @@ namespace HexGame.Gameplay
         event Action Consumed;
         bool IsConsumed { get; }
         
-        UniTask Consume();
+        void Consume();
     }
 }

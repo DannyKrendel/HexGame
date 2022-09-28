@@ -1065,8 +1065,6 @@ MonoBehaviour:
   _gameGrid: {fileID: 2124094461}
   _playerSpawnPoint: {fileID: 1026204222}
   _levelFinish: {fileID: 244133756}
-  _platformManager: {fileID: 671263828}
-  _fishManager: {fileID: 730822947}
 --- !u!114 &580784396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1277,7 +1275,6 @@ GameObject:
   m_Component:
   - component: {fileID: 671263826}
   - component: {fileID: 671263827}
-  - component: {fileID: 671263828}
   m_Layer: 0
   m_Name: Platforms
   m_TagString: Untagged
@@ -1353,18 +1350,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!114 &671263828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 671263825}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 567624494eba430cba7391f7a6077b78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &680150086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,7 +1672,6 @@ GameObject:
   m_Component:
   - component: {fileID: 730822945}
   - component: {fileID: 730822946}
-  - component: {fileID: 730822947}
   m_Layer: 0
   m_Name: Fishes
   m_TagString: Untagged
@@ -1751,18 +1735,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!114 &730822947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730822944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea518aa4b09d4434b03a969af51900cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &772737916
 PrefabInstance:
   m_ObjectHideFlags: 0
