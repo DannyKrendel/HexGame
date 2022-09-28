@@ -10,6 +10,7 @@ namespace HexGame.Gameplay
         private readonly HexGridElementManager<Platform> _platformManager;
         private readonly HexGridElementManager<Fish> _fishManager;
         private readonly HexGridElementManager<Button> _buttonManager;
+        private readonly HexGridElementManager<Door> _doorManager;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly LevelFinish _levelFinish;
         private readonly IFactory<Player> _playerFactory;
@@ -20,22 +21,21 @@ namespace HexGame.Gameplay
         public int ConsumedFishCount => _fishManager.Elements.Count(x => x.IsConsumed);
 
         public GameplayService(HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
-            HexGridElementManager<Button> buttonManager, ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
+            HexGridElementManager<Button> buttonManager, HexGridElementManager<Door> doorManager,
+            ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
             IFactory<Player> playerFactory, GridService gridService)
         {
             _platformManager = platformManager;
             _fishManager = fishManager;
             _buttonManager = buttonManager;
+            _doorManager = doorManager;
             _playerSpawnPoint = playerSpawnPoint;
             _levelFinish = levelFinish;
             _playerFactory = playerFactory;
             _gridService = gridService;
 
-            foreach (var button in buttonManager.Elements)
-            {
-                if (platformManager.TryGetElement(button.Coordinates, out var platform))
-                    button.SetParentPlatform(platform);
-            }
+            AttachToPlatform(buttonManager.Elements);
+            AttachToPlatform(doorManager.Elements);
         }
 
         public void SpawnPlayer()
@@ -69,6 +69,10 @@ namespace HexGame.Gameplay
                     _buttonManager.TryGetElement(coordinates, out var button);
                     element = (T)(object)button;
                     break;
+                case nameof(Door):
+                    _doorManager.TryGetElement(coordinates, out var door);
+                    element = (T)(object)door;
+                    break;
             }
 
             return element != null;
@@ -96,6 +100,10 @@ namespace HexGame.Gameplay
                 platform.ResetState();
             foreach (var fish in _fishManager.Elements)
                 fish.ResetState();
+            foreach (var button in _buttonManager.Elements)
+                button.ResetState();
+            foreach (var door in _doorManager.Elements)
+                door.ResetState();
 
             _playerSpawnPoint.Spawn(Player);
         }
@@ -114,6 +122,15 @@ namespace HexGame.Gameplay
                 bounds.Encapsulate(new Bounds(platform.transform.position, cellSize));
 
             return bounds;
+        }
+
+        private void AttachToPlatform(IEnumerable<IAttachedToPlatform> elements)
+        {
+            foreach (var button in elements)
+            {
+                if (_platformManager.TryGetElement(button.Coordinates, out var platform))
+                    button.AttachToPlatform(platform);
+            }
         }
     }
 }

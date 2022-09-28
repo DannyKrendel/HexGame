@@ -54,8 +54,7 @@ namespace HexGame.Gameplay.StateMachine
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             var coordinates = _gridService.WorldToCoordinates(worldPos);
-            if (_gameplayService.TryGetElement(coordinates, out Platform clickedPlatform) &&
-                CanPlayerMoveToPlatform(clickedPlatform))
+            if (CanPlayerMoveToCoords(coordinates, out var clickedPlatform))
             {
                 if (_gameplayService.TryGetElementUnderPlayer(out Button button))
                     button.Release();
@@ -79,9 +78,11 @@ namespace HexGame.Gameplay.StateMachine
                 button.Press();
         }
 
-        private bool CanPlayerMoveToPlatform(Platform platform)
+        private bool CanPlayerMoveToCoords(HexCoordinates coordinates, out Platform platform)
         {
-            return !_player.Movement.IsMoving && _platformsForMove.Contains(platform);
+            platform = null;
+            return !_player.Movement.IsMoving && _gameplayService.TryGetElement(coordinates, out platform)
+                    && _platformsForMove.Contains(platform);
         }
 
         private void UpdatePlatformsForMove()
@@ -90,7 +91,9 @@ namespace HexGame.Gameplay.StateMachine
             var neighbors = _gameplayService.GetNeighbors(_player.Coordinates);
             foreach (var platform in neighbors)
             {
-                if (platform.Durability > 0)
+                _gameplayService.TryGetElement(platform.Coordinates, out Door door);
+                
+                if (!platform.IsBroken && door && door.IsOpen || !door && !platform.IsBroken)
                     _platformsForMove.Add(platform);
             }
         }

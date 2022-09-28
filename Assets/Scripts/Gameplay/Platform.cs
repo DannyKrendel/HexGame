@@ -18,6 +18,7 @@ namespace HexGame.Gameplay
         public event Action Reset;
         
         public bool IsHighlighted { get; private set; }
+        public bool IsBroken => Durability == 0;
         public int Durability { get; private set; }
         
         private void Awake()
