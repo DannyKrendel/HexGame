@@ -1,19 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace HexGame.Storage
 {
-    public class JsonStorage<T> : IStorage<T>
+    public class BinaryStorage<T> : IStorage<T>
     {
         public async UniTask Save(string path, T data)
         {
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path) ?? throw new InvalidOperationException());
-                var jsonStr = JsonUtility.ToJson(data, true);
-                await File.WriteAllTextAsync(path, jsonStr);
+
+                var binaryFormatter = new BinaryFormatter();
+                var fileStream = File.Create(path);
+                
+                binaryFormatter.Serialize(fileStream, data);
+                
+                fileStream.Close();
             }
             catch (Exception ex)
             {
@@ -28,8 +34,14 @@ namespace HexGame.Storage
 
             try
             {
-                var dataAsJson = await File.ReadAllTextAsync(path);
-                return JsonUtility.FromJson<T>(dataAsJson);
+                var binaryFormatter = new BinaryFormatter();
+                var fileStream = File.Open(path, FileMode.Open);
+
+                var data = (T)binaryFormatter.Deserialize(fileStream);
+                
+                fileStream.Close();
+
+                return data;
             }
             catch (Exception ex)
             {

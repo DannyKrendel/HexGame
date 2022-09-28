@@ -35,7 +35,7 @@ namespace HexGame.Infrastructure
         private void BindStorage()
         {
             Container
-                .Bind(typeof(IStorage<>)).To(typeof(JsonStorage<>))
+                .Bind(typeof(IStorage<>)).To(typeof(BinaryStorage<>))
                 .AsSingle();
         }
 

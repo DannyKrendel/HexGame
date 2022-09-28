@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   _projectInstallerSettings:
-    SaveLocation: /saves/save.json
+    SaveLocation: /saves/save.save
   _gameInstallerSettings:
     GameCameraPrefab: {fileID: 974235203607003733, guid: 17fc83b77ba38564cad50163cc89b37d, type: 3}
     PlayerPrefab: {fileID: 97984984423761461, guid: 7695e4857fcf7ee46b4bdf90a2620644, type: 3}
