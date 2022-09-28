@@ -75,6 +75,15 @@ namespace HexGame.Input
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""LongClick"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""83da29a9-eb94-4735-8271-853ec67a57f5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""ScrollWheel"",
                     ""type"": ""PassThrough"",
                     ""id"": ""26b898be-a1ed-4ffe-b5d6-62a14a916221"",
@@ -538,6 +547,50 @@ namespace HexGame.Input
                     ""action"": ""TrackedDeviceOrientation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""69ed58af-c3dd-4c0d-b5e4-59fb17edb1d8"",
+                    ""path"": ""<Touchscreen>/touch*/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Touch"",
+                    ""action"": ""LongClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f597ccd4-f198-4715-9d4c-72d29c0f37d5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Touch"",
+                    ""action"": ""LongClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fb863e4e-08b1-42b7-87e9-11efc7c37067"",
+                    ""path"": ""<Pen>/tip"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Touch"",
+                    ""action"": ""LongClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff025742-6610-470a-8120-0d334ef954a7"",
+                    ""path"": ""<XRController>/trigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Touch"",
+                    ""action"": ""LongClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -612,6 +665,7 @@ namespace HexGame.Input
             m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
             m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
             m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
+            m_UI_LongClick = m_UI.FindAction("LongClick", throwIfNotFound: true);
             m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
             m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
             m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
@@ -681,6 +735,7 @@ namespace HexGame.Input
         private readonly InputAction m_UI_Cancel;
         private readonly InputAction m_UI_Point;
         private readonly InputAction m_UI_Click;
+        private readonly InputAction m_UI_LongClick;
         private readonly InputAction m_UI_ScrollWheel;
         private readonly InputAction m_UI_MiddleClick;
         private readonly InputAction m_UI_RightClick;
@@ -695,6 +750,7 @@ namespace HexGame.Input
             public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
             public InputAction @Point => m_Wrapper.m_UI_Point;
             public InputAction @Click => m_Wrapper.m_UI_Click;
+            public InputAction @LongClick => m_Wrapper.m_UI_LongClick;
             public InputAction @ScrollWheel => m_Wrapper.m_UI_ScrollWheel;
             public InputAction @MiddleClick => m_Wrapper.m_UI_MiddleClick;
             public InputAction @RightClick => m_Wrapper.m_UI_RightClick;
@@ -724,6 +780,9 @@ namespace HexGame.Input
                     @Click.started -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
                     @Click.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
                     @Click.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnClick;
+                    @LongClick.started -= m_Wrapper.m_UIActionsCallbackInterface.OnLongClick;
+                    @LongClick.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnLongClick;
+                    @LongClick.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnLongClick;
                     @ScrollWheel.started -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
                     @ScrollWheel.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
                     @ScrollWheel.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnScrollWheel;
@@ -758,6 +817,9 @@ namespace HexGame.Input
                     @Click.started += instance.OnClick;
                     @Click.performed += instance.OnClick;
                     @Click.canceled += instance.OnClick;
+                    @LongClick.started += instance.OnLongClick;
+                    @LongClick.performed += instance.OnLongClick;
+                    @LongClick.canceled += instance.OnLongClick;
                     @ScrollWheel.started += instance.OnScrollWheel;
                     @ScrollWheel.performed += instance.OnScrollWheel;
                     @ScrollWheel.canceled += instance.OnScrollWheel;
@@ -829,6 +891,7 @@ namespace HexGame.Input
             void OnCancel(InputAction.CallbackContext context);
             void OnPoint(InputAction.CallbackContext context);
             void OnClick(InputAction.CallbackContext context);
+            void OnLongClick(InputAction.CallbackContext context);
             void OnScrollWheel(InputAction.CallbackContext context);
             void OnMiddleClick(InputAction.CallbackContext context);
             void OnRightClick(InputAction.CallbackContext context);

@@ -8,5 +8,6 @@ namespace HexGame.Infrastructure
     {
         public GameObject GameCameraPrefab;
         public GameObject PlayerPrefab;
+        public GameObject PlayerMittenPrefab;
     }
 }

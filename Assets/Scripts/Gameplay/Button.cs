@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HexGame.Gameplay
 {
-    public class Button : HexGridElement, IButton, IAttachedToPlatform
+    public class Button : HexGridElement, IButton, IAttachedToPlatform, IResetState
     {
         [SerializeField] private List<ButtonConnection> _buttonConnections = new();
 

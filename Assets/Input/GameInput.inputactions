@@ -1,5 +1,5 @@
 {
-    "name": "HexGame",
+    "name": "GameInput",
     "maps": [
         {
             "name": "UI",
@@ -48,6 +48,15 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "LongClick",
+                    "type": "PassThrough",
+                    "id": "83da29a9-eb94-4735-8271-853ec67a57f5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
                     "initialStateCheck": true
                 },
                 {
@@ -512,6 +521,50 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "69ed58af-c3dd-4c0d-b5e4-59fb17edb1d8",
+                    "path": "<Touchscreen>/touch*/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "LongClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f597ccd4-f198-4715-9d4c-72d29c0f37d5",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "LongClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb863e4e-08b1-42b7-87e9-11efc7c37067",
+                    "path": "<Pen>/tip",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "LongClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ff025742-6610-470a-8120-0d334ef954a7",
+                    "path": "<XRController>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "LongClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

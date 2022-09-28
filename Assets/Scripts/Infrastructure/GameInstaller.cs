@@ -39,6 +39,7 @@ namespace HexGame.Infrastructure
             BindGameplayService();
             BindGridElementManager();
             BindLevelFinish();
+            BindPlayerMitten();
         }
 
         private void BindGameCamera()
@@ -176,6 +177,15 @@ namespace HexGame.Infrastructure
         {
             Container
                 .BindInstance(_levelFinish)
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindPlayerMitten()
+        {
+            Container
+                .BindIFactory<PlayerMitten>()
+                .FromComponentInNewPrefab(_gameInstallerSettings.PlayerMittenPrefab)
                 .AsSingle()
                 .NonLazy();
         }

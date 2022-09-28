@@ -17,5 +17,6 @@ MonoBehaviour:
   _gameInstallerSettings:
     GameCameraPrefab: {fileID: 974235203607003733, guid: 17fc83b77ba38564cad50163cc89b37d, type: 3}
     PlayerPrefab: {fileID: 97984984423761461, guid: 7695e4857fcf7ee46b4bdf90a2620644, type: 3}
+    PlayerMittenPrefab: {fileID: 7585987324531820998, guid: c17c3f356855eda43860fef569d1d753, type: 3}
   _gameSettings:
     CameraPadding: 0.4

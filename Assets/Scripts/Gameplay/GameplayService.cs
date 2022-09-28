@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -14,16 +15,18 @@ namespace HexGame.Gameplay
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly LevelFinish _levelFinish;
         private readonly IFactory<Player> _playerFactory;
+        private readonly IFactory<PlayerMitten> _playerMittenFactory;
         private readonly GridService _gridService;
 
         public Player Player { get; private set; }
+        public PlayerMitten PlayerMitten { get; private set; }
         public int AllFishCount => _fishManager.Elements.Count;
         public int ConsumedFishCount => _fishManager.Elements.Count(x => x.IsConsumed);
 
         public GameplayService(HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
             HexGridElementManager<Button> buttonManager, HexGridElementManager<Door> doorManager,
             ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
-            IFactory<Player> playerFactory, GridService gridService)
+            IFactory<Player> playerFactory, IFactory<PlayerMitten> playerMittenFactory, GridService gridService)
         {
             _platformManager = platformManager;
             _fishManager = fishManager;
@@ -32,6 +35,7 @@ namespace HexGame.Gameplay
             _playerSpawnPoint = playerSpawnPoint;
             _levelFinish = levelFinish;
             _playerFactory = playerFactory;
+            _playerMittenFactory = playerMittenFactory;
             _gridService = gridService;
 
             AttachToPlatform(buttonManager.Elements);
@@ -44,6 +48,16 @@ namespace HexGame.Gameplay
                 Player = _playerFactory.Create();
             
             _playerSpawnPoint.Spawn(Player);
+        }
+
+        public void SpawnPlayerMitten()
+        {
+            if (PlayerMitten == null)
+                PlayerMitten = _playerMittenFactory.Create();
+
+            PlayerMitten.SetPlayer(Player);
+            PlayerMitten.Hide();
+            PlayerMitten.PullToPlayer(true).Forget();
         }
 
         public bool TryGetElementUnderPlayer<T>(out T element) where T : HexGridElement

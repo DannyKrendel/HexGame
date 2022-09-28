@@ -24,6 +24,7 @@ namespace HexGame.Gameplay.StateMachine
         {
             _inputManager.Enable();
             _gameplayService.SpawnPlayer();
+            _gameplayService.SpawnPlayerMitten();
             _gameCamera.FitCameraToBounds(_gameplayService.GetLevelBounds(), _gameSettings.CameraPadding);
             GameStateMachine.ChangeState(GameStateType.Gameplay);
         }

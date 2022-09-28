@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HexGame.Gameplay
 {
-    public class Door : HexGridElement, IDoor, IAttachedToPlatform
+    public class Door : HexGridElement, IDoor, IAttachedToPlatform, IResetState
     {
         private Platform _parentPlatform;
         

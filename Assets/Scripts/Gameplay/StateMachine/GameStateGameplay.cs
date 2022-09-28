@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using HexGame.Input;
 using UnityEngine;
 
@@ -15,7 +16,9 @@ namespace HexGame.Gameplay.StateMachine
         private readonly GridService _gridService;
 
         private Player _player;
+        private PlayerMitten _playerMitten;
         private List<Platform> _platformsForMove;
+        private bool _canMoveMitten;
 
         public GameStateGameplay(GameStateMachine gameStateMachine, GameCamera gameCamera, InputManager inputManager, 
             PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService) 
@@ -30,17 +33,23 @@ namespace HexGame.Gameplay.StateMachine
 
         public override void Enter()
         {
-            _inputManager.Click += OnClick;
+            _inputManager.TapStarted += OnTapStarted;
+            _inputManager.TapEnded += OnTapEnded;
+            _inputManager.LongTap += OnLongTap;
             
             _player = _gameplayService.Player;
             _player.Movement.Moved += OnPlayerMoved;
 
+            _playerMitten = _gameplayService.PlayerMitten;
+            
             OnPlayerMoved();
         }
 
         public override void Exit()
         {
-            _inputManager.Click -= OnClick;
+            _inputManager.TapStarted -= OnTapStarted;
+            _inputManager.TapEnded -= OnTapEnded;
+            _inputManager.LongTap -= OnLongTap;
             _player.Movement.Moved -= OnPlayerMoved;
         }
 
@@ -48,9 +57,16 @@ namespace HexGame.Gameplay.StateMachine
         {
             if (_gameplayService.IsWin())
                 GameStateMachine.ChangeState(GameStateType.Win);
+
+            if (_canMoveMitten)
+            {
+                var newMittenPosition = _gameCamera.Camera.ScreenToWorldPoint(_inputManager.PointerPosition);
+                newMittenPosition.z = 0;
+                _playerMitten.UpdatePositionAndRotate(newMittenPosition);
+            }
         }
 
-        private void OnClick(Vector2 pointerPosition)
+        private void OnTapStarted(Vector2 pointerPosition)
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             var coordinates = _gridService.WorldToCoordinates(worldPos);
@@ -63,6 +79,29 @@ namespace HexGame.Gameplay.StateMachine
                     playerPlatform.SubtractDurability();
                 
                 _player.Movement.Move(clickedPlatform.Coordinates);
+            }
+        }
+
+        private void OnTapEnded(Vector2 pointerPosition)
+        {
+            PullMittenToPlayer().Forget();
+        }
+
+        private async UniTask PullMittenToPlayer()
+        {
+            _canMoveMitten = false;
+            await _playerMitten.PullToPlayer();
+            _playerMitten.Hide();
+        }
+        
+        private void OnLongTap(Vector2 pointerPosition)
+        {
+            var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
+            var coordinates = _gridService.WorldToCoordinates(worldPos);
+            if (_player.Coordinates == coordinates)
+            {
+                _playerMitten.Show();
+                _canMoveMitten = true;
             }
         }
 

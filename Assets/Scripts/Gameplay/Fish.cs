@@ -4,7 +4,7 @@ using HexGame.Utils;
 
 namespace HexGame.Gameplay
 {
-    public class Fish : HexGridElement, IConsumable
+    public class Fish : HexGridElement, IConsumable, IResetState
     {
         public event ActionAsync Consuming;
         public event Action Consumed;
