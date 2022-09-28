@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace HexGame.Gameplay
+﻿namespace HexGame.Gameplay
 {
     public class PlayerSpawnPoint : HexGridElement, ISpawnPoint<Player>
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace HexGame
+namespace HexGame.Gameplay
 {
     [RequireComponent(typeof(Camera))]
     public class GameCamera : MonoBehaviour

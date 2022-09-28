@@ -1,5 +1,4 @@
-﻿using HexGame.Gameplay;
-using HexGame.UI;
+﻿using HexGame.UI;
 using UnityEngine;
 using Zenject;
 

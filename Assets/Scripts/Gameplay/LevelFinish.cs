@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace HexGame.Gameplay
+﻿namespace HexGame.Gameplay
 {
     public class LevelFinish : HexGridElement
     {

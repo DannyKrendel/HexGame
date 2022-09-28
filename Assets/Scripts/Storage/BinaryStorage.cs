@@ -2,7 +2,6 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace HexGame.Storage
 {

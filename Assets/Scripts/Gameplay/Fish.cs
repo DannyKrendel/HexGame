@@ -1,11 +1,13 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
+using HexGame.Utils;
 
 namespace HexGame.Gameplay
 {
     public class Fish : HexGridElement, IConsumable
     {
-        public event Func<UniTask> Consumed;
+        public event ActionAsync Consuming;
+        public event Action Consumed;
         public event Action Reset;
         
         public bool IsConsumed { get; private set; }
@@ -13,9 +15,9 @@ namespace HexGame.Gameplay
         public async UniTask Consume()
         {
             IsConsumed = true;
-            if (Consumed != null)
-                await Consumed();
+            await Consuming.InvokeAsync();
             gameObject.SetActive(false);
+            Consumed?.Invoke();
         }
         
         public void ResetState()

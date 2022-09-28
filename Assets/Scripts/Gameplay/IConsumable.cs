@@ -5,7 +5,7 @@ namespace HexGame.Gameplay
 {
     public interface IConsumable
     {
-        event Func<UniTask> Consumed;
+        event Action Consumed;
         bool IsConsumed { get; }
         
         UniTask Consume();
