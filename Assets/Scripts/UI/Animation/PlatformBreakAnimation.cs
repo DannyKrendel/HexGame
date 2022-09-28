@@ -9,7 +9,6 @@ namespace HexGame.UI.Animation
     public class PlatformBreakAnimation : MonoBehaviour
     {
         [SerializeField] private Platform _platform;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private Ease _ease = Ease.InOutSine;
         
@@ -17,7 +16,7 @@ namespace HexGame.UI.Animation
         
         private void Awake()
         {
-            _tween = _spriteRenderer.transform
+            _tween = _platform.transform
                 .DOScale(0, _duration)
                 .SetEase(_ease)
                 .Pause();

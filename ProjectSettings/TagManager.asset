@@ -44,7 +44,7 @@ TagManager:
   - name: Platforms
     uniqueID: 196516183
     locked: 0
-  - name: Fishes
+  - name: GameplayElements
     uniqueID: 1108150437
     locked: 0
   - name: Player

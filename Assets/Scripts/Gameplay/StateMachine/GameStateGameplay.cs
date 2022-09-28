@@ -54,11 +54,15 @@ namespace HexGame.Gameplay.StateMachine
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             var coordinates = _gridService.WorldToCoordinates(worldPos);
-            if (_gameplayService.PlatformManager.TryGetElement(coordinates, out var clickedPlatform) && 
-                _gameplayService.PlatformManager.TryGetElement(_player.Coordinates, out var playerPlatform) && 
+            if (_gameplayService.TryGetElement(coordinates, out Platform clickedPlatform) &&
                 CanPlayerMoveToPlatform(clickedPlatform))
             {
-                playerPlatform.SubtractDurability();
+                if (_gameplayService.TryGetElementUnderPlayer(out Button button))
+                    button.Release();
+                
+                if (_gameplayService.TryGetElementUnderPlayer(out Platform playerPlatform))
+                    playerPlatform.SubtractDurability();
+                
                 _player.Movement.Move(clickedPlatform.Coordinates);
             }
         }
@@ -68,11 +72,11 @@ namespace HexGame.Gameplay.StateMachine
             UpdatePlatformsForMove();
             _platformHighlighter.Highlight(_platformsForMove);
 
-            if (_gameplayService.FishManager.TryGetElement(_player.Coordinates, out var fish) &&
-                fish.Coordinates == _player.Coordinates)
-            {
+            if (_gameplayService.TryGetElementUnderPlayer(out Fish fish))
                 fish.Consume();
-            }
+
+            if (_gameplayService.TryGetElementUnderPlayer(out Button button))
+                button.Press();
         }
 
         private bool CanPlayerMoveToPlatform(Platform platform)

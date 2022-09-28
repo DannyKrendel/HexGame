@@ -12,6 +12,7 @@ namespace HexGame.Gameplay
         
         public event Action Highlighted;
         public event Action HighlightCleared;
+        public event Action DurabilityChanged;
         public event ActionAsync Breaking;
         public event Action Broke;
         public event Action Reset;
@@ -44,6 +45,10 @@ namespace HexGame.Gameplay
         {
             var oldDurability = Durability;
             Durability = Mathf.Max(Durability - amount, 0);
+            
+            if (oldDurability != Durability)
+                DurabilityChanged?.Invoke();
+            
             if (Durability == 0 && oldDurability > 0)
             {
                 ClearHighlight();

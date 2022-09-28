@@ -7,27 +7,35 @@ namespace HexGame.Gameplay
 {
     public class GameplayService
     {
+        private readonly HexGridElementManager<Platform> _platformManager;
+        private readonly HexGridElementManager<Fish> _fishManager;
+        private readonly HexGridElementManager<Button> _buttonManager;
         private readonly ISpawnPoint<Player> _playerSpawnPoint;
         private readonly LevelFinish _levelFinish;
         private readonly IFactory<Player> _playerFactory;
         private readonly GridService _gridService;
 
         public Player Player { get; private set; }
-        public HexGridElementManager<Platform> PlatformManager { get; }
-        public HexGridElementManager<Fish> FishManager { get; }
-        public int AllFishCount => FishManager.Elements.Count;
-        public int ConsumedFishCount => FishManager.Elements.Count(x => x.IsConsumed);
+        public int AllFishCount => _fishManager.Elements.Count;
+        public int ConsumedFishCount => _fishManager.Elements.Count(x => x.IsConsumed);
 
-        public GameplayService(HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager, 
-            ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
+        public GameplayService(HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
+            HexGridElementManager<Button> buttonManager, ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
             IFactory<Player> playerFactory, GridService gridService)
         {
-            PlatformManager = platformManager;
-            FishManager = fishManager;
+            _platformManager = platformManager;
+            _fishManager = fishManager;
+            _buttonManager = buttonManager;
             _playerSpawnPoint = playerSpawnPoint;
             _levelFinish = levelFinish;
             _playerFactory = playerFactory;
             _gridService = gridService;
+
+            foreach (var button in buttonManager.Elements)
+            {
+                if (platformManager.TryGetElement(button.Coordinates, out var platform))
+                    button.SetParentPlatform(platform);
+            }
         }
 
         public void SpawnPlayer()
@@ -37,12 +45,40 @@ namespace HexGame.Gameplay
             
             _playerSpawnPoint.Spawn(Player);
         }
+
+        public bool TryGetElementUnderPlayer<T>(out T element) where T : HexGridElement
+        {
+            return TryGetElement(Player.Coordinates, out element);
+        }
+        
+        public bool TryGetElement<T>(HexCoordinates coordinates, out T element) where T : HexGridElement
+        {
+            element = null;
+            
+            switch (typeof(T).Name)
+            {
+                case nameof(Platform):
+                    _platformManager.TryGetElement(coordinates, out var platform);
+                    element = (T)(object)platform;
+                    break;
+                case nameof(Fish):
+                    _fishManager.TryGetElement(coordinates, out var fish);
+                    element = (T)(object)fish;
+                    break;
+                case nameof(Button):
+                    _buttonManager.TryGetElement(coordinates, out var button);
+                    element = (T)(object)button;
+                    break;
+            }
+
+            return element != null;
+        }
         
         public List<Platform> GetNeighbors(HexCoordinates coordinates, int range = 1)
         {
             var neighbors = new List<Platform>();
 
-            foreach (var platform in PlatformManager.Elements)
+            foreach (var platform in _platformManager.Elements)
             {
                 if (platform.Coordinates == coordinates) continue;
                 
@@ -56,9 +92,9 @@ namespace HexGame.Gameplay
 
         public void RestartLevel()
         {
-            foreach (var platform in PlatformManager.Elements)
+            foreach (var platform in _platformManager.Elements)
                 platform.ResetState();
-            foreach (var fish in FishManager.Elements)
+            foreach (var fish in _fishManager.Elements)
                 fish.ResetState();
 
             _playerSpawnPoint.Spawn(Player);
@@ -74,7 +110,7 @@ namespace HexGame.Gameplay
             var cellSize = _gridService.CellSize;
             var bounds = new Bounds();
 
-            foreach (var platform in PlatformManager.Elements)
+            foreach (var platform in _platformManager.Elements)
                 bounds.Encapsulate(new Bounds(platform.transform.position, cellSize));
 
             return bounds;

@@ -5,6 +5,7 @@ using HexGame.UI.Animation;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using Button = UnityEngine.UI.Button;
 
 namespace HexGame.UI
 {
