@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 
 namespace HexGame.Gameplay
 {
     public class PlayerMitten : MonoBehaviour, IResetState
     {
-        [SerializeField] private float _pullDuration = 0.5f;
-        [SerializeField] private Ease _pullEase = Ease.Linear;
+        [SerializeField] private float _pullSpeed = 0.5f;
+        [SerializeField] private AnimationCurve _speedCurve = AnimationCurve.Linear(1, 1, 2, 2);
         
         public event Action Reset;
 
@@ -29,40 +29,54 @@ namespace HexGame.Gameplay
             gameObject.SetActive(false);
         }
 
-        public async UniTask PullToPlayer(bool immediate = false)
+        public async UniTask PullToPlayer(CancellationToken cancellationToken = default)
         {
-            if (immediate)
-            {
-                transform.position = _player.transform.position;
-                return;
-            }
+            var linkedTokenSource = 
+                CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, this.GetCancellationTokenOnDestroy());
+            var progress = 0f;
+            var maxDistance = GetSqrDistanceToPlayer();
+            var currentDistance = maxDistance;
 
-            var timer = 0f;
-            var startPosition = transform.position;
-            while (timer < _pullDuration)
+            while (currentDistance > 0.001f)
             {
-                transform.position = Vector3.Lerp(startPosition, _player.transform.position, timer / _pullDuration);
-                timer += Time.deltaTime;
-                await UniTask.DelayFrame(1);
+                var maxDistanceDelta = _pullSpeed * Time.deltaTime * _speedCurve.Evaluate(progress);
+                UpdatePositionAndRotateToPlayer(Vector3.MoveTowards(
+                    transform.position, _player.transform.position, maxDistanceDelta));
+
+                currentDistance = GetSqrDistanceToPlayer();
+                progress = 1 - currentDistance / maxDistance;
+
+                await UniTask.Yield(linkedTokenSource.Token);
             }
-            
-            transform.position = _player.transform.position;
-            transform.rotation = Quaternion.identity;
         }
 
-        public void UpdatePositionAndRotate(Vector3 position)
+        public void PullToPlayerImmediate()
+        {
+            transform.position = _player.transform.position;
+        }
+
+        public void UpdatePositionAndRotateToPlayer(Vector3 position)
         {
             transform.position = position;
-
-            var newMittenRotation =
-                Quaternion.FromToRotation(Vector3.up, transform.position - _player.transform.position);
-            transform.rotation = newMittenRotation;
+            RotateToPlayer();
         }
 
         public void ResetState()
         {
             Hide();
             Reset?.Invoke();
+        }
+        
+        private void RotateToPlayer()
+        {
+            var newMittenRotation = 
+                Quaternion.FromToRotation(Vector3.up, transform.position - _player.transform.position);
+            transform.rotation = newMittenRotation;
+        }
+
+        private float GetSqrDistanceToPlayer()
+        {
+            return (transform.position - _player.transform.position).sqrMagnitude;
         }
     }
 }

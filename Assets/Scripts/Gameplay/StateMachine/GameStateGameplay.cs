@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using HexGame.Input;
+using HexGame.Utils;
 using UnityEngine;
 
 namespace HexGame.Gameplay.StateMachine
@@ -18,7 +20,9 @@ namespace HexGame.Gameplay.StateMachine
         private Player _player;
         private PlayerMitten _playerMitten;
         private List<Platform> _platformsForMove;
-        private bool _canMoveMitten;
+        private bool _isMittenDragged;
+
+        private CancellationTokenSource _mittenCancellation = new();
 
         public GameStateGameplay(GameStateMachine gameStateMachine, GameCamera gameCamera, InputManager inputManager, 
             PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService) 
@@ -58,11 +62,11 @@ namespace HexGame.Gameplay.StateMachine
             if (_gameplayService.IsWin())
                 GameStateMachine.ChangeState(GameStateType.Win);
 
-            if (_canMoveMitten)
+            if (_isMittenDragged)
             {
                 var newMittenPosition = _gameCamera.Camera.ScreenToWorldPoint(_inputManager.PointerPosition);
                 newMittenPosition.z = 0;
-                _playerMitten.UpdatePositionAndRotate(newMittenPosition);
+                _playerMitten.UpdatePositionAndRotateToPlayer(newMittenPosition);
             }
         }
 
@@ -84,14 +88,11 @@ namespace HexGame.Gameplay.StateMachine
 
         private void OnTapEnded(Vector2 pointerPosition)
         {
-            PullMittenToPlayer().Forget();
-        }
-
-        private async UniTask PullMittenToPlayer()
-        {
-            _canMoveMitten = false;
-            await _playerMitten.PullToPlayer();
-            _playerMitten.Hide();
+            if (_isMittenDragged)
+            {
+                _isMittenDragged = false;
+                PullMittenToPlayer(UniTaskUtils.RefreshToken(ref _mittenCancellation)).Forget();
+            }
         }
         
         private void OnLongTap(Vector2 pointerPosition)
@@ -100,9 +101,20 @@ namespace HexGame.Gameplay.StateMachine
             var coordinates = _gridService.WorldToCoordinates(worldPos);
             if (_player.Coordinates == coordinates)
             {
+                _mittenCancellation.Cancel();
                 _playerMitten.Show();
-                _canMoveMitten = true;
+                _isMittenDragged = true;
             }
+        }
+
+        private async UniTask PullMittenToPlayer(CancellationToken cancellationToken)
+        {
+            await _playerMitten.PullToPlayer(cancellationToken);
+            
+            if (cancellationToken.IsCancellationRequested)
+                return;
+            
+            _playerMitten.Hide();
         }
 
         private void OnPlayerMoved()
@@ -120,8 +132,9 @@ namespace HexGame.Gameplay.StateMachine
         private bool CanPlayerMoveToCoords(HexCoordinates coordinates, out Platform platform)
         {
             platform = null;
-            return !_player.Movement.IsMoving && _gameplayService.TryGetElement(coordinates, out platform)
-                    && _platformsForMove.Contains(platform);
+            return !_player.Movement.IsMoving && 
+                   _gameplayService.TryGetElement(coordinates, out platform) &&
+                   _platformsForMove.Contains(platform);
         }
 
         private void UpdatePlatformsForMove()

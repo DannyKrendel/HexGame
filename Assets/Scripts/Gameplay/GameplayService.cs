@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
+using HexGame.Gameplay.StateMachine;
 using UnityEngine;
 using Zenject;
 
@@ -8,6 +8,7 @@ namespace HexGame.Gameplay
 {
     public class GameplayService
     {
+        private readonly GameStateMachine _gameStateMachine;
         private readonly HexGridElementManager<Platform> _platformManager;
         private readonly HexGridElementManager<Fish> _fishManager;
         private readonly HexGridElementManager<Button> _buttonManager;
@@ -23,11 +24,13 @@ namespace HexGame.Gameplay
         public int AllFishCount => _fishManager.Elements.Count;
         public int ConsumedFishCount => _fishManager.Elements.Count(x => x.IsConsumed);
 
-        public GameplayService(HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
+        public GameplayService(GameStateMachine gameStateMachine, 
+            HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
             HexGridElementManager<Button> buttonManager, HexGridElementManager<Door> doorManager,
             ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
             IFactory<Player> playerFactory, IFactory<PlayerMitten> playerMittenFactory, GridService gridService)
         {
+            _gameStateMachine = gameStateMachine;
             _platformManager = platformManager;
             _fishManager = fishManager;
             _buttonManager = buttonManager;
@@ -57,7 +60,7 @@ namespace HexGame.Gameplay
 
             PlayerMitten.SetPlayer(Player);
             PlayerMitten.Hide();
-            PlayerMitten.PullToPlayer(true).Forget();
+            PlayerMitten.PullToPlayerImmediate();
         }
 
         public bool TryGetElementUnderPlayer<T>(out T element) where T : HexGridElement
@@ -110,16 +113,9 @@ namespace HexGame.Gameplay
 
         public void RestartLevel()
         {
-            foreach (var platform in _platformManager.Elements)
-                platform.ResetState();
-            foreach (var fish in _fishManager.Elements)
-                fish.ResetState();
-            foreach (var button in _buttonManager.Elements)
-                button.ResetState();
-            foreach (var door in _doorManager.Elements)
-                door.ResetState();
-
-            _playerSpawnPoint.Spawn(Player);
+            ResetLevel();
+            
+            _gameStateMachine.ChangeState(GameStateType.StartLevel);
         }
 
         public bool IsWin()
@@ -145,6 +141,18 @@ namespace HexGame.Gameplay
                 if (_platformManager.TryGetElement(button.Coordinates, out var platform))
                     button.AttachToPlatform(platform);
             }
+        }
+
+        private void ResetLevel()
+        {
+            foreach (var platform in _platformManager.Elements)
+                platform.ResetState();
+            foreach (var fish in _fishManager.Elements)
+                fish.ResetState();
+            foreach (var button in _buttonManager.Elements)
+                button.ResetState();
+            foreach (var door in _doorManager.Elements)
+                door.ResetState();
         }
     }
 }
