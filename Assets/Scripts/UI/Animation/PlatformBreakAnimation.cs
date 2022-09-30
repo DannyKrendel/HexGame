@@ -36,7 +36,7 @@ namespace HexGame.UI.Animation
         private async UniTask Play(CancellationToken cancellationToken = default)
         {
             _tween.Restart();
-            await _tween.AsyncWaitForCompletion();
+            await _tween.AwaitForComplete(TweenCancelBehaviour.Complete, cancellationToken);
         }
     }
 }

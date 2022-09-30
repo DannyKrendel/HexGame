@@ -32,8 +32,6 @@ namespace HexGame.UI.Animation
         {
             _door.Opened += PlayOpen;
             _door.Closed += PlayClose;
-            _openTween.Rewind();
-            _closeTween.Rewind();
         }
         
         private void OnDisable()

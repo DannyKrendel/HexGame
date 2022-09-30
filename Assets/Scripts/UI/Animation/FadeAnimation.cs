@@ -1,4 +1,6 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Threading;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.CompilerServices;
 using DG.Tweening;
 using UnityEngine;
 
@@ -32,16 +34,16 @@ namespace HexGame.UI.Animation
                 .Pause();
         }
         
-        public async UniTask PlayFadeIn()
+        public async UniTask PlayFadeIn(CancellationToken cancellationToken = default)
         {
             _fadeInTween.Restart();
-            await _fadeInTween.AsyncWaitForCompletion();
+            await _fadeInTween.AwaitForComplete(TweenCancelBehaviour.Complete, cancellationToken);
         }
         
-        public async UniTask PlayFadeOut()
+        public async UniTask PlayFadeOut(CancellationToken cancellationToken = default)
         {
             _fadeOutTween.Restart();
-            await _fadeOutTween.AsyncWaitForCompletion();
+            await _fadeOutTween.AwaitForComplete(TweenCancelBehaviour.Complete, cancellationToken);
         }
     }
 }
