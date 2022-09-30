@@ -1,4 +1,5 @@
 ﻿using HexGame.Input;
+using UnityEngine;
 
 namespace HexGame.Gameplay.StateMachine
 {
@@ -15,11 +16,13 @@ namespace HexGame.Gameplay.StateMachine
 
         public override void Enter()
         {
+            Time.timeScale = 0;
             _inputManager.Disable();
         }
 
         public override void Exit()
         {
+            Time.timeScale = 1;
             _inputManager.Enable();
         }
     }
