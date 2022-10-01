@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using HexGame.Input;
@@ -20,9 +21,11 @@ namespace HexGame.Gameplay.StateMachine
         private Player _player;
         private PlayerMitten _playerMitten;
         private List<Platform> _platformsForMove;
+        private List<Button> _availableButtonsForMitten;
         private bool _isMittenDragged;
 
-        private CancellationTokenSource _mittenCancellation = new();
+        private CancellationTokenSource _mittenPullCancellation;
+        private CancellationTokenSource _mittenLaunchCancellation;
 
         public GameStateGameplay(GameStateMachine gameStateMachine, GameCamera gameCamera, InputManager inputManager, 
             PlatformHighlighter platformHighlighter, GameplayService gameplayService, GridService gridService) 
@@ -66,7 +69,8 @@ namespace HexGame.Gameplay.StateMachine
             {
                 var newMittenPosition = _gameCamera.Camera.ScreenToWorldPoint(_inputManager.PointerPosition);
                 newMittenPosition.z = 0;
-                _playerMitten.UpdatePositionAndRotateToPlayer(newMittenPosition);
+                var cellCenter = _gridService.GetCellCenterWorld(newMittenPosition);
+                _playerMitten.UpdatePositionAndRotateToPlayer(cellCenter);
             }
         }
 
@@ -88,10 +92,24 @@ namespace HexGame.Gameplay.StateMachine
 
         private void OnTapEnded(Vector2 pointerPosition)
         {
-            if (_isMittenDragged)
+            if (!_isMittenDragged) return;
+            
+            _isMittenDragged = false;
+                
+            _platformHighlighter.Highlight(_platformsForMove);
+
+            var mittenButton = _availableButtonsForMitten
+                .FirstOrDefault(x => x.transform.position == _playerMitten.transform.position);
+                
+            if (mittenButton == null)
             {
-                _isMittenDragged = false;
-                PullMittenToPlayer(UniTaskUtils.RefreshToken(ref _mittenCancellation)).Forget();
+                _playerMitten.PullToPlayerImmediate();
+                _playerMitten.TogglePreviewMode(false);
+                _playerMitten.Hide();
+            }
+            else
+            {
+                LaunchMittenToButton(mittenButton).Forget();
             }
         }
         
@@ -99,22 +117,49 @@ namespace HexGame.Gameplay.StateMachine
         {
             var worldPos = _gameCamera.Camera.ScreenToWorldPoint(pointerPosition);
             var coordinates = _gridService.WorldToCoordinates(worldPos);
-            if (_player.Coordinates == coordinates)
+            if (_player.Coordinates != coordinates || _playerMitten.IsLaunching || _playerMitten.IsPulling) 
+                return;
+            
+            if (_playerMitten.TargetButton == null)
             {
-                _mittenCancellation.Cancel();
+                _mittenPullCancellation?.Cancel();
+                
                 _playerMitten.Show();
+                _playerMitten.TogglePreviewMode(true);
                 _isMittenDragged = true;
+                
+                UpdateAvailableButtonsForMitten();
+                _platformHighlighter.Highlight(_availableButtonsForMitten.Select(x => x.ParentPlatform).ToList());
+            }
+            else
+            {
+                PullMittenToPlayer().Forget();
             }
         }
 
-        private async UniTask PullMittenToPlayer(CancellationToken cancellationToken)
+        private async UniTask PullMittenToPlayer()
         {
-            await _playerMitten.PullToPlayer(cancellationToken);
+            var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                UniTaskUtils.RefreshToken(ref _mittenPullCancellation),
+                _playerMitten.GetCancellationTokenOnDestroy());
             
-            if (cancellationToken.IsCancellationRequested)
+            await _playerMitten.PullToPlayer(cancellation.Token);
+
+            if (cancellation.IsCancellationRequested) 
                 return;
-            
+
             _playerMitten.Hide();
+        }
+
+        private async UniTask LaunchMittenToButton(Button button)
+        {
+            var cancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                UniTaskUtils.RefreshToken(ref _mittenLaunchCancellation),
+                _playerMitten.GetCancellationTokenOnDestroy());
+            
+            _playerMitten.TogglePreviewMode(false);
+            
+            await _playerMitten.LaunchToTarget(button, cancellation.Token);
         }
 
         private void OnPlayerMoved()
@@ -147,6 +192,22 @@ namespace HexGame.Gameplay.StateMachine
                 
                 if (!platform.IsBroken && door && door.IsOpen || !door && !platform.IsBroken)
                     _platformsForMove.Add(platform);
+            }
+        }
+
+        private void UpdateAvailableButtonsForMitten()
+        {
+            _availableButtonsForMitten = new List<Button>();
+            var buttons = _gameplayService.GetElements<Button>();
+            foreach (var button in buttons)
+            {
+                if (button.Coordinates != _player.Coordinates &&
+                    button.Coordinates.X != _player.Coordinates.X && button.Coordinates.Z == _player.Coordinates.Z ||
+                    button.Coordinates.X == _player.Coordinates.X && button.Coordinates.Z != _player.Coordinates.Z ||
+                    button.Coordinates.X + button.Coordinates.Z == _player.Coordinates.X + _player.Coordinates.Z)
+                {
+                    _availableButtonsForMitten.Add(button);
+                }
             }
         }
     }

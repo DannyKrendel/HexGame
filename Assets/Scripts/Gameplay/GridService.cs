@@ -24,5 +24,11 @@ namespace HexGame.Gameplay
             var cellPos = _grid.WorldToCell(worldPosition);
             return HexCoordinates.FromOffsetCoordinates(cellPos.x, cellPos.y);
         }
+
+        public Vector3 GetCellCenterWorld(Vector3 worldPosition)
+        {
+            var cellPos = _grid.WorldToCell(worldPosition);
+            return _grid.CellToWorld(cellPos);
+        }
     }
 }

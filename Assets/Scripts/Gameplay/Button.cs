@@ -7,19 +7,18 @@ namespace HexGame.Gameplay
     public class Button : HexGridElement, IButton, IAttachedToPlatform, IResetState
     {
         [SerializeField] private List<ButtonConnection> _buttonConnections = new();
-
-        private Platform _parentPlatform;
         
         public event Action Pressed;
         public event Action Released;
         public event Action Reset;
         
         public bool IsPressed { get; private set; }
+        public Platform ParentPlatform { get; private set; }
 
         public void AttachToPlatform(Platform parentPlatform)
         {
-            _parentPlatform = parentPlatform;
-            transform.parent = _parentPlatform.transform;
+            ParentPlatform = parentPlatform;
+            transform.parent = ParentPlatform.transform;
         }
 
         public void Press()

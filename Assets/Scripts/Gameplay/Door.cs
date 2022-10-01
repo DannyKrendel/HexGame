@@ -5,18 +5,18 @@ namespace HexGame.Gameplay
 {
     public class Door : HexGridElement, IDoor, IAttachedToPlatform, IResetState
     {
-        private Platform _parentPlatform;
-        
         public event Action Opened;
         public event Action Closed;
         public event Action Reset;
         
         public bool IsOpen { get; private set; }
 
+        public Platform ParentPlatform { get; private set; }
+
         public void AttachToPlatform(Platform parentPlatform)
         {
-            _parentPlatform = parentPlatform;
-            transform.parent = _parentPlatform.transform;
+            ParentPlatform = parentPlatform;
+            transform.parent = ParentPlatform.transform;
         }
         
         public void Open()

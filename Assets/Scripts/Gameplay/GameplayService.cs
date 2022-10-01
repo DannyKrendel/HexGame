@@ -94,6 +94,20 @@ namespace HexGame.Gameplay
 
             return element != null;
         }
+
+        public IEnumerable<T> GetElements<T>() where T : HexGridElement
+        {
+            var elements = typeof(T).Name switch
+            {
+                nameof(Platform) => _platformManager.Elements.Cast<T>(),
+                nameof(Fish) => _fishManager.Elements.Cast<T>(),
+                nameof(Button) => _buttonManager.Elements.Cast<T>(),
+                nameof(Door) => _doorManager.Elements.Cast<T>(),
+                _ => null
+            };
+
+            return elements;
+        }
         
         public List<Platform> GetNeighbors(HexCoordinates coordinates, int range = 1)
         {
@@ -113,7 +127,16 @@ namespace HexGame.Gameplay
 
         public void RestartLevel()
         {
-            ResetLevel();
+            foreach (var platform in _platformManager.Elements)
+                platform.ResetState();
+            foreach (var fish in _fishManager.Elements)
+                fish.ResetState();
+            foreach (var button in _buttonManager.Elements)
+                button.ResetState();
+            foreach (var door in _doorManager.Elements)
+                door.ResetState();
+            
+            PlayerMitten.ResetState();
             
             _gameStateMachine.ChangeState(GameStateType.StartLevel);
         }
@@ -141,18 +164,6 @@ namespace HexGame.Gameplay
                 if (_platformManager.TryGetElement(button.Coordinates, out var platform))
                     button.AttachToPlatform(platform);
             }
-        }
-
-        private void ResetLevel()
-        {
-            foreach (var platform in _platformManager.Elements)
-                platform.ResetState();
-            foreach (var fish in _fishManager.Elements)
-                fish.ResetState();
-            foreach (var button in _buttonManager.Elements)
-                button.ResetState();
-            foreach (var door in _doorManager.Elements)
-                door.ResetState();
         }
     }
 }
