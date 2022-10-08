@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Cysharp.Threading.Tasks;
-using HexGame.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -13,14 +12,14 @@ namespace HexGame.Gameplay
         public int LevelCount => _levels.Count;
         public int CurrentLevelId { get; private set; } = -1;
 
-        private TransitionEventBus _transitionEventBus;
-
+        private SceneService _sceneService;
+        
         private Dictionary<int, Level> _levels;
 
         [Inject]
-        private void Construct(TransitionEventBus transitionEventBus)
+        private void Construct(SceneService sceneService)
         {
-            _transitionEventBus = transitionEventBus;
+            _sceneService = sceneService;
         }
         
         private void Awake()
@@ -46,10 +45,7 @@ namespace HexGame.Gameplay
             if (_levels.TryGetValue(level, out var scene))
             {
                 CurrentLevelId = level;
-                await _transitionEventBus.Raise(TransitionEventBus.EventType.BeforeAction);
-                await SceneManager.LoadSceneAsync(scene.BuildIndex, LoadSceneMode.Additive);
-                await SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().buildIndex);
-                await _transitionEventBus.Raise(TransitionEventBus.EventType.AfterAction);
+                await _sceneService.SwitchSceneAsync(scene.BuildIndex, true);
             }
         }
         

@@ -25,6 +25,7 @@ namespace HexGame.Infrastructure
             BindLevelManager();
             BindTransitionEventBus();
             BindTransitionManager();
+            BindSceneService();
         }
 
         private void BindGameInput()
@@ -88,6 +89,14 @@ namespace HexGame.Infrastructure
                 .NonLazy();
             Container
                 .Bind<TransitionManager>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindSceneService()
+        {
+            Container
+                .Bind<SceneService>()
                 .AsSingle()
                 .NonLazy();
         }

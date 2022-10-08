@@ -3,6 +3,7 @@ using HexGame.Gameplay;
 using HexGame.Gameplay.StateMachine;
 using HexGame.UI.Animation;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 using Button = UnityEngine.UI.Button;
@@ -17,12 +18,15 @@ namespace HexGame.UI
         
         private GameStateMachine _gameStateMachine;
         private GameplayService _gameplayService;
+        private SceneService _sceneService;
 
         [Inject]
-        private void Construct(GameStateMachine gameStateMachine, GameplayService gameplayService)
+        private void Construct(GameStateMachine gameStateMachine, GameplayService gameplayService,
+            SceneService sceneService)
         {
             _gameStateMachine = gameStateMachine;
             _gameplayService = gameplayService;
+            _sceneService = sceneService;
         }
         
         private void Awake()
@@ -52,7 +56,12 @@ namespace HexGame.UI
 
         private void OnMainMenuButtonPressed()
         {
-            
+            GoToMainMenu().Forget();
+        }
+
+        private async UniTask GoToMainMenu()
+        {
+            await _sceneService.SwitchSceneAsync(1, true);
         }
     }
 }
