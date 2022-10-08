@@ -18,10 +18,17 @@ namespace HexGame.Editor
         static HexGridElementHelper()
         {
             Elements = new List<ElementData>();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             EditorApplication.hierarchyChanged += OnHierarchyChanged;
             SceneView.duringSceneGui += OnSceneGui;
         }
-        
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange playModeState)
+        {
+            if (playModeState == PlayModeStateChange.EnteredEditMode)
+                Elements.Clear();
+        }
+
         private static void OnHierarchyChanged()
         {
             foreach (var gameObject in SceneManager.GetActiveScene().GetRootGameObjects())
