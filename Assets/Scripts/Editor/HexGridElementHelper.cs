@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using HexGame.Gameplay;
-using Polyternity.Editor.Utils;
+using PolyternityStuff.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;

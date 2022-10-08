@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using HexGame.Gameplay.StateMachine;
 using UnityEngine;
 using Zenject;
@@ -18,6 +19,7 @@ namespace HexGame.Gameplay
         private readonly IFactory<Player> _playerFactory;
         private readonly IFactory<PlayerMitten> _playerMittenFactory;
         private readonly GridService _gridService;
+        private readonly TransitionEventBus _transitionEventBus;
 
         public Player Player { get; private set; }
         public PlayerMitten PlayerMitten { get; private set; }
@@ -28,7 +30,8 @@ namespace HexGame.Gameplay
             HexGridElementManager<Platform> platformManager, HexGridElementManager<Fish> fishManager,
             HexGridElementManager<Button> buttonManager, HexGridElementManager<Door> doorManager,
             ISpawnPoint<Player> playerSpawnPoint, LevelFinish levelFinish, 
-            IFactory<Player> playerFactory, IFactory<PlayerMitten> playerMittenFactory, GridService gridService)
+            IFactory<Player> playerFactory, IFactory<PlayerMitten> playerMittenFactory, GridService gridService,
+            TransitionEventBus transitionEventBus)
         {
             _gameStateMachine = gameStateMachine;
             _platformManager = platformManager;
@@ -40,6 +43,7 @@ namespace HexGame.Gameplay
             _playerFactory = playerFactory;
             _playerMittenFactory = playerMittenFactory;
             _gridService = gridService;
+            _transitionEventBus = transitionEventBus;
 
             AttachToPlatform(buttonManager.Elements);
             AttachToPlatform(doorManager.Elements);
@@ -125,8 +129,10 @@ namespace HexGame.Gameplay
             return neighbors;
         }
 
-        public void RestartLevel()
+        public async UniTask RestartLevel()
         {
+            await _transitionEventBus.Raise(TransitionEventBus.EventType.BeforeAction);
+            
             foreach (var platform in _platformManager.Elements)
                 platform.ResetState();
             foreach (var fish in _fishManager.Elements)
@@ -139,6 +145,8 @@ namespace HexGame.Gameplay
             PlayerMitten.ResetState();
             
             _gameStateMachine.ChangeState(GameStateType.StartLevel);
+            
+            await _transitionEventBus.Raise(TransitionEventBus.EventType.AfterAction);
         }
 
         public bool IsWin()

@@ -1,4 +1,5 @@
 ﻿using System;
+using PolyternityStuff.SceneManagement;
 
 namespace HexGame.Infrastructure
 {
@@ -6,5 +7,6 @@ namespace HexGame.Infrastructure
     public struct ProjectInstallerSettings
     {
         public string SaveLocation;
+        public SceneReference TransitionScene;
     }
 }

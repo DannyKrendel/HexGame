@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectInstallerSettings:
     SaveLocation: /saves/save.save
+    TransitionScene:
+      _sceneAsset: {fileID: 102900000, guid: f49eeba10c5ec164c9b996e62ff03c91, type: 3}
+      _scenePath: Assets/Scenes/Transition.unity
   _gameInstallerSettings:
     GameCameraPrefab: {fileID: 974235203607003733, guid: 17fc83b77ba38564cad50163cc89b37d, type: 3}
     PlayerPrefab: {fileID: 97984984423761461, guid: 7695e4857fcf7ee46b4bdf90a2620644, type: 3}

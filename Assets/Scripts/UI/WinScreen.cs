@@ -9,7 +9,7 @@ using Button = UnityEngine.UI.Button;
 
 namespace HexGame.UI
 {
-    public class WinView : MonoBehaviour, IScreen
+    public class WinScreen : MonoBehaviour, IScreen
     {
         [SerializeField] private Button _restartButton;
         [SerializeField] private Button _mainMenuButton;

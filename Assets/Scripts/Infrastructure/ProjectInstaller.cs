@@ -1,6 +1,7 @@
 using HexGame.Gameplay;
 using HexGame.Input;
 using HexGame.Storage;
+using HexGame.UI;
 using Zenject;
 
 namespace HexGame.Infrastructure
@@ -22,6 +23,8 @@ namespace HexGame.Infrastructure
             BindSaveSystem();
             BindSaveManager();
             BindLevelManager();
+            BindTransitionEventBus();
+            BindTransitionManager();
         }
 
         private void BindGameInput()
@@ -65,6 +68,26 @@ namespace HexGame.Infrastructure
             Container
                 .Bind<LevelManager>()
                 .FromNewComponentOnNewGameObject()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindTransitionEventBus()
+        {
+            Container
+                .Bind<TransitionEventBus>()
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindTransitionManager()
+        {
+            Container
+                .BindInstance(_projectInstallerSettings.TransitionScene)
+                .WhenInjectedInto<TransitionManager>()
+                .NonLazy();
+            Container
+                .Bind<TransitionManager>()
                 .AsSingle()
                 .NonLazy();
         }

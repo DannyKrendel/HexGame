@@ -143,8 +143,13 @@ namespace HexGame.Gameplay.StateMachine
                 UniTaskUtils.RefreshToken(ref _mittenPullCancellation),
                 _playerMitten.GetCancellationTokenOnDestroy());
             
-            await _playerMitten.PullToPlayer(cancellation.Token);
+            var pullToPlayer = _playerMitten.PullToPlayer(cancellation.Token);
 
+            UpdatePlatformsForMove();
+            _platformHighlighter.Highlight(_platformsForMove);
+
+            await pullToPlayer;
+            
             if (cancellation.IsCancellationRequested) 
                 return;
 

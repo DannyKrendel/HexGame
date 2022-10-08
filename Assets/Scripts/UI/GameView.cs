@@ -12,7 +12,7 @@ namespace HexGame.UI
     {
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _restartButton;
-        [SerializeField] private WinView _winView;
+        [SerializeField] private WinScreen _winScreen;
 
         private GameStateMachine _gameStateMachine;
         private MenuManager _menuManager;
@@ -45,7 +45,7 @@ namespace HexGame.UI
         private void OnStateChanged()
         {
             if (_gameStateMachine.CurrentState == GameStateType.Win)
-                _winView.Show().Forget();
+                _winScreen.Show().Forget();
         }
 
         private void OnPauseButtonPressed()
