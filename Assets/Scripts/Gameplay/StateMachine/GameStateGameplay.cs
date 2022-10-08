@@ -160,6 +160,9 @@ namespace HexGame.Gameplay.StateMachine
             _playerMitten.TogglePreviewMode(false);
             
             await _playerMitten.LaunchToTarget(button, cancellation.Token);
+            
+            UpdatePlatformsForMove();
+            _platformHighlighter.Highlight(_platformsForMove);
         }
 
         private void OnPlayerMoved()
